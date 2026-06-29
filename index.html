@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinsArts - Minecraft NameMC Skin Art Generator</title>
+    <meta name="description" content="Free tool to generate 27-part skin arts for your NameMC profile. Crop images, preview in 3D, edit pixels, and download ready-to-upload Minecraft skins.">
+    <meta name="keywords" content="Minecraft, NameMC, skin art, generator, 72x24, skin history, crop image for namemc, skinsarts, 3D skin editor">
+    <meta name="author" content="ArmandoLZ (Sonrojado)">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="top-bar">
+        <button id="btn-open-studio" class="hamburger-btn"> <span data-i18n="btn_studio">STUDIO EDITOR</span></button>
+        <button id="btn-lang" class="lang-btn"> EN / ES</button>
+    </div>
+
+    <div id="editor-studio-modal" class="studio-modal">
+        <div class="studio-header">
+            <h2> SkinsArts Studio</h2>
+            <button id="btn-close-studio" class="close-btn">X</button>
+        </div>
+        
+        <div class="studio-body">
+            <div class="studio-left">
+                <p style="font-size: 10px; color: #11caa0; margin-bottom: 10px;" data-i18n="canvas_2d">2D Canvas (64x64)</p>
+                <div class="paint-canvas-container">
+                    <canvas id="editor-skin-canvas" width="64" height="64"></canvas>
+                </div>
+                
+                <div class="editor-tools">
+                    <div class="color-picker-wrapper">
+                        <label style="font-size: 10px;" data-i18n="color_label">Color:</label>
+                        <input type="color" id="paint-color-picker" value="#11caa0">
+                    </div>
+                    <div class="palette-grid">
+                        <button class="palette-color" style="background-color: #5555ff;" data-color="#5555ff"></button>
+                        <button class="palette-color" style="background-color: #11caa0;" data-color="#11caa0"></button>
+                        <button class="palette-color" style="background-color: #ffffff;" data-color="#ffffff"></button>
+                        <button class="palette-color" style="background-color: #000000;" data-color="#000000"></button>
+                        <button class="palette-color" style="background-color: #ff5555;" data-color="#ff5555"></button>
+                        <button id="btn-tool-eraser" class="palette-color eraser-icon" title="Eraser">🗑️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="studio-right">
+                <p style="font-size: 10px; color: #11caa0; margin-bottom: 10px;" data-i18n="render_3d">Live 3D Render</p>
+                <canvas id="skin-3d-viewer" class="viewer-3d-canvas" width="320" height="400"></canvas>
+                
+                <div class="advanced-3d-controls">
+                    <div class="control-row">
+                        <button id="btn-pause-studio" class="tool-btn">▶️ <span data-i18n="play">Play</span></button>
+                        <button id="btn-explode-view" class="tool-btn">🔲 <span data-i18n="explode">Explode</span></button>
+                    </div>
+                    <div class="control-row">
+                        <button class="tool-btn active" onclick="toggleLayer('inner')">Inner</button>
+                        <button class="tool-btn active" onclick="toggleLayer('outer')">Outer</button>
+                    </div>
+                    <div class="control-row parts-grid">
+                        <button class="tool-btn active part-btn" data-part="head">Head</button>
+                        <button class="tool-btn active part-btn" data-part="body">Body</button>
+                        <button class="tool-btn active part-btn" data-part="leftArm">L-Arm</button>
+                        <button class="tool-btn active part-btn" data-part="rightArm">R-Arm</button>
+                        <button class="tool-btn active part-btn" data-part="leftLeg">L-Leg</button>
+                        <button class="tool-btn active part-btn" data-part="rightLeg">R-Leg</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="studio-footer">
+            <button id="btn-save-skin-edit" class="main-button" data-i18n="apply_base">💾 APPLY THIS BASE</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 data-i18n="title">Minecraft NameMC Skin Generator</h1>
+        
+        <div id="drop-zone" class="drop-zone">
+            <p data-i18n="dropzone_text">Drag your image here, click or<br>press CTRL + V to paste</p>
+            <div class="upload-icon">↑</div>
+            <input type="file" id="file-input" accept="image/*" hidden>
+        </div>
+
+        <button id="btn-toggle-editor" class="main-button" style="display: none; margin-top: 10px;" data-i18n="personalize_img">Customize Image</button>
+
+        <div id="editor-panel" class="editor-panel" style="display: none; margin-top: 20px;">
+            <h3 data-i18n="adjust_crop">Adjust image crop:</h3>
+            <div class="control-group">
+                <label data-i18n="quality">Quality (Algorithm):</label>
+                <select id="select-calidad" class="retro-select">
+                    <option value="nearest" data-i18n="q_nearest">Nearest Neighbor (Pure pixels)</option>
+                    <option value="bilinear" data-i18n="q_bilinear">Bilinear (Smooth)</option>
+                    <option value="high" data-i18n="q_high">High Quality (Fant / Lanczos)</option>
+                </select>
+            </div>
+            <button id="btn-free-mode" class="main-button mode-free-btn" data-i18n="free_mode">Enable Free Mode</button>
+            <div class="cropper-container" style="max-width: 100%; max-height: 400px; margin-top: 15px;">
+                <img id="image-to-crop" src="" style="display: block; max-width: 100%;">
+            </div>
+        </div>
+
+        <div class="preview-section" style="margin-top: 30px;">
+            <canvas id="main-canvas"></canvas>
+            <span class="size-label" data-i18n="result_label">Result 72x24 (Pure Pixels)</span>
+        </div>
+
+        <h3 data-i18n="choose_base">Choose your preferred base skin:</h3>
+        <div class="base-options">
+            <button class="main-button base-btn" id="btn-steve">Steve (BB)</button>
+            <button class="main-button base-btn" id="btn-alex">Alex (BB)</button>
+            <button class="main-button base-btn" id="btn-namemc">NameMC (Blue)</button>
+            <button class="main-button base-btn" id="btn-custom" data-i18n="custom">Custom</button>
+        </div>
+
+        <div id="custom-panel" style="display: none; margin-top: 20px;">
+            <p data-i18n="search_java">Search Java player:</p>
+            <input type="text" id="username-input" placeholder="Notch" style="padding: 10px; font-size: 12px; text-align: center;">
+            <button id="fetch-api-btn" class="main-button" style="padding: 10px; font-size: 10px; margin-top: 10px;" data-i18n="search_btn">Search Skin</button>
+            <p style="margin-top: 25px;" data-i18n="upload_base">Or upload a custom base (64x64):</p>
+            <input type="file" id="local-base-input" accept="image/png" style="color: white; font-size: 10px;">
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <canvas id="base-preview-canvas" width="64" height="64" style="width: 128px; height: 128px; display: none; margin: 0 auto; border: 4px solid #45494D;"></canvas>
+        </div>
+
+        <div class="signature-box" style="margin-top: 30px; padding: 15px; border: 4px dashed #45494D; background: #1C2228;">
+            <h3 style="color: #11caa0; margin-top: 0;" data-i18n="sig_title">Skin Signature (Watermark)</h3>
+            <p style="font-size: 8px; color: #ddd;" data-i18n="sig_desc">Stamp your 8x8 face at the (0,0) texture corner.</p>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                <input type="text" id="signature-nick" placeholder="Minecraft Nickname">
+                <button id="btn-load-signature" class="main-button" style="padding: 10px; font-size: 8px;" data-i18n="sig_btn">Load Face</button>
+            </div>
+            <label style="font-size: 10px; color: #fff; display: block; margin-top: 15px; cursor: pointer;">
+                <input type="checkbox" id="check-firma" checked> <span data-i18n="sig_check">Apply signature to files</span>
+            </label>
+            <canvas id="signature-preview" width="8" height="8" style="width: 32px; height: 32px; display: none; margin: 10px auto 0; border: 2px solid #11caa0;"></canvas>
+        </div>
+
+        <div id="mosaic-wrapper" class="mosaic-wrapper" style="display: none;">
+            <div id="namemc-mosaic" class="namemc-mosaic"></div>
+            <div class="mosaic-preview-3d">
+                <h4 id="preview-3d-label" style="color: white; margin-bottom: 10px; font-size: 12px;" data-i18n="hover_faces">(Hover over faces)</h4>
+                <canvas id="mosaic-3d-viewer" class="viewer-3d-canvas" width="160" height="260"></canvas>
+                <button id="btn-pause-mosaic" class="tool-btn" style="margin-top: 10px;">▶️ <span data-i18n="play">Play</span></button>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 40px;">
+            <button id="generate-btn" class="main-button generate-btn" data-i18n="gen_27">Generate & Download ZIP</button>
+            <button id="reset-app-btn" class="main-button reset-btn" data-i18n="clear_all">Clear All</button>
+        </div>
+
+        <footer class="footer-credits">
+            <p data-i18n="footer_made">Created by</p>
+            <a href="https://namemc.com/profile/Sonrojado" target="_blank" class="easter-egg">ArmandoLZ (Sonrojado)</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/bundles/skinview3d.bundle.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

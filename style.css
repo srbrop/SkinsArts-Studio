@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+* { font-family: "Press Start 2P", system-ui; box-sizing: border-box; image-rendering: pixelated; }
+body { background-color: #1C2228; color: white; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 20px; margin: 0; min-height: 100vh; overflow-x: hidden; }
+.container { text-align: center; max-width: 800px; width: 100%; }
+h1 { font-size: 16px; line-height: 1.6; margin-bottom: 30px; text-shadow: 3px 3px 0px #000; }
+h3 { font-size: 12px; margin-top: 40px; line-height: 1.4; color: #fff; }
+.top-bar { position: absolute; top: 20px; left: 20px; display: flex; gap: 10px; z-index: 999; }
+.hamburger-btn, .lang-btn { background-color: #7289A0; border: 3px solid #45494D; color: white; padding: 10px; font-size: 10px; cursor: pointer; transition: transform 0.2s; }
+.hamburger-btn:hover, .lang-btn:hover { background-color: #11caa0; border-color: #11caa0; transform: scale(1.05); }
+.drop-zone { border: 5px dashed #45494D; background-color: #7289A0; padding: 30px 20px; margin: 20px 0; cursor: pointer; transition: all 0.2s ease; }
+.drop-zone:hover { background-color: #5c728a; border-style: solid; }
+.drop-zone p { font-size: 10px; line-height: 1.8; margin: 0; text-shadow: 1px 1px 0px #000; }
+.upload-icon { font-size: 32px; margin-top: 15px; }
+.editor-panel { background-color: #7289A0; border: 4px solid #45494D; padding: 20px; margin: 20px 0; text-align: left; }
+.control-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+.control-group label { font-size: 8px; color: #fff; }
+.retro-select { background-color: #1C2228; color: #11caa0; border: 3px solid #45494D; padding: 8px; font-size: 8px; outline: none; cursor: pointer; width: 100%; }
+.main-button { background-color: #7289A0; border: 4px solid #45494D; color: white; padding: 15px 20px; font-size: 11px; cursor: pointer; transition: all 0.2s ease; text-shadow: 1px 1px 0px #000; }
+.main-button:hover { background-color: #11caa0; border-color: #11caa0; transform: scale(1.03); }
+.mode-free-btn { border-color: #f39c12; color: #f39c12; background: #1C2228; }
+.generate-btn { border-color: #11caa0; color: #11caa0; background: #1C2228; }
+.reset-btn { border-color: #ff5555; color: #ff5555; background: #1C2228; }
+input[type="text"] { background-color: #1C2228; border: 3px solid #45494D; color: #11caa0; outline: none; }
+canvas { border: 4px solid #45494D; background-color: #1C2228; margin: 15px 0; box-shadow: 0px 5px 15px rgba(0,0,0,0.3); }
+#main-canvas { width: 432px; height: 144px; }
+.size-label { display: block; font-size: 10px; color: #ddd; }
+.base-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+.studio-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(28, 34, 40, 0.98); z-index: 2000; display: none; flex-direction: column; }
+.studio-modal.open { display: flex; }
+.studio-header { display: flex; justify-content: space-between; align-items: center; background-color: #1C2228; padding: 20px 40px; border-bottom: 4px solid #11caa0; }
+.studio-header h2 { font-size: 16px; margin: 0; color: white; text-shadow: 2px 2px 0px #11caa0; }
+.close-btn { background: transparent; border: 2px solid #ff5555; color: #ff5555; padding: 10px; font-size: 12px; cursor: pointer; }
+.close-btn:hover { background: #ff5555; color: white; }
+.studio-body { display: flex; flex: 1; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 50px; padding: 20px; overflow-y: auto; }
+.studio-left, .studio-right { display: flex; flex-direction: column; align-items: center; }
+.studio-footer { background-color: #1C2228; padding: 20px; text-align: center; border-top: 4px solid #45494D; }
+.paint-canvas-container { background-color: #1C2228; border: 6px solid #45494D; display: flex; justify-content: center; padding: 15px; box-shadow: 0px 10px 30px rgba(0,0,0,0.8); }
+#editor-skin-canvas { width: 448px; height: 448px; background-image: linear-gradient(45deg, #1C2228 25%, transparent 25%), linear-gradient(-45deg, #1C2228 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1C2228 75%), linear-gradient(-45deg, transparent 75%, #1C2228 75%); background-size: 28px 28px; background-position: 0 0, 0 14px, 14px -14px, -14px 0px; cursor: crosshair; }
+.viewer-3d-canvas { border: 4px solid #11caa0; border-radius: 8px; background: radial-gradient(circle, #7289A0 0%, #1C2228 100%); box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5); cursor: grab; }
+.viewer-3d-canvas:active { cursor: grabbing; }
+.editor-tools { background: #7289A0; padding: 20px; border: 4px solid #45494D; display: flex; align-items: center; justify-content: center; gap: 30px; margin-top: 20px; width: 100%; }
+.color-picker-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+input[type="color"] { border: 3px solid #1C2228; background: transparent; width: 100px; height: 60px; cursor: pointer; }
+.palette-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 250px; }
+.palette-color { width: 45px; height: 45px; border: 2px solid #1C2228; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
+.palette-color:hover { transform: scale(1.1); border-color: #11caa0; }
+.eraser-icon { background: #45494D; font-size: 18px; }
+.advanced-3d-controls { background-color: #7289A0; border: 3px solid #45494D; padding: 15px; margin-top: 15px; width: 100%; text-align: center; }
+.control-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+.parts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.tool-btn { background-color: #1C2228; color: #aaa; border: 2px solid #45494D; font-size: 7px; padding: 8px; cursor: pointer; font-family: "Press Start 2P"; }
+.tool-btn.active { color: white; border-color: #11caa0; background-color: #0b6b55; }
+.tool-btn:hover { background-color: #45494D; color: white; }
+.mosaic-wrapper { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 30px; margin-top: 40px; }
+.namemc-mosaic { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; background-color: #1C2228; padding: 10px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); border: 4px solid #45494D; }
+.namemc-mosaic canvas { width: 48px; height: 48px; border: none; margin: 0; border-radius: 4px; box-shadow: none; cursor: pointer; transition: outline 0.1s; }
+.namemc-mosaic canvas:hover { outline: 2px solid #ff5555; }
+.mosaic-preview-3d { display: flex; flex-direction: column; align-items: center; }
+.cropper-container { border: 2px solid #11caa0; background-color: #1C2228; }
+.cropper-point, .cropper-line { background-color: #11caa0 !important; }
+.footer-credits { margin-top: 60px; padding-bottom: 20px; font-size: 8px; color: #aaa; text-align: center; }
+.easter-egg { color: #11caa0; text-decoration: none; font-weight: bold; transition: color 0.3s; }
+.easter-egg:hover { color: #ff5555; }
