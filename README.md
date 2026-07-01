@@ -24,13 +24,13 @@ I got tired of opening image editors to manually crop and resize images pixel by
 We know you want to see the magic. Here is how simple it is:
 
 ### 1. The Power of Copy-Paste (Universal Image Support)
-![Visual Guide 1](https://github.com/user-attachments/assets/d9bbcfe5-c4f7-47b1-9f0c-cf29daf1d01e)
+![Visual Guide 1](https://github.com/user-attachments/assets/476298bb-4925-4091-b296-5bf13daf26ed)
 *GIF: Searching for an image on Google, copying it, pasting it directly into SkinsArts, and using the Turqouise-outlined cropper UI for framing.*
 
 Finding your perfect artwork is effortless. **You don't need to download anything!** Just find an image you love, right-click to copy it, and paste (`Ctrl + V`) directly into SkinsArts Studio. The downscaling is done automatically!
 
 ### 2. Fast Base Skin Selection (Built-in or NameMC Search)
-![Visual Guide 2](https://github.com/user-attachments/assets/476298bb-4925-4091-b296-5bf13daf26ed)
+![Visual Guide 2](https://github.com/user-attachments/assets/d9bbcfe5-c4f7-47b1-9f0c-cf29daf1d01e)
 *GIF: Quickly changing base skins using the fast search tool and local file upload.*
 
 Quickly find your base skin to use for the mural. Search by Minecraft username (connected directly to NameMC), upload your own local `.png`, or choose from our built-in templates (Steve, Alex, NameMC Blue).
