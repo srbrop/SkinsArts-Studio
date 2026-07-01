@@ -66,7 +66,7 @@ This is the critical step to avoid having your mural marked as "recycled" or "sp
     *   **Row C (Bottom):** Upload `c9.png` first, wait a few seconds, then `c8.png`, `c7.png`, all the way to `c1.png`.
     *   **Row B (Middle):** Upload `b9.png` first, wait, then `b8.png` ... to `b1.png`.
     *   **Row A (Top):** Upload `a9.png` first, wait, then `a8.png` ... to `a2.png`.
-    *   **A1 is Optional:** The very last skin (`a1.png`) is optional, as NameMC can still display the last active skin you use.
+    *   A1 is Optional: The final file (a1.png) is optional, as you can simply leave your original, personal skin in that slot to ensure it remains your active, permanent look.
 
 **IMPORTANT:** Always press F5 (refresh) on your NameMC profile between uploads to ensure the skins are registering and the descending cached list is updating correctly.
 
