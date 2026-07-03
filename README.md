@@ -80,6 +80,12 @@ This is the critical step to avoid having your mural marked as "recycled" or "sp
 
 ---
 
+## 🧰 More Tools You Might Like (SkinsArts Ecosystem)
+
+- 📸 **[NameMC-Capture-Profile](https://github.com/srbrop/NameMC-Capture-Profile):** If you want to capture your NameMC profile in a high-resolution image, use this tool! *(Note: Repository currently in Spanish)*
+- 🤖 **[Auto-Skin-NameMC](https://github.com/srbrop/Auto-Skin-NameMC/tree/main):** If you want to automate the uploading process of your 27 skins in less than 8 minutes, use this extension! *(Note: Repository currently in Spanish)*
+
+---
 ### ❤️ Support the Project
 This tool was made with love for the Minecraft community. If you found it helpful and want to support my work, the best way to do it is by dropping a follow on my NameMC profile!
 
