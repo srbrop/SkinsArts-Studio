@@ -366,9 +366,9 @@ function renderMosaicEnVivo() {
             finalCtx.drawImage(baseSkinImg, 0, 0, 64, 64);
             if(targetBaseLayer) finalCtx.clearRect(40, 8, 8, 8); 
 
-            if (aplicarFirma && targetBaseLayer) {
-                finalCtx.drawImage(signatureImg, 0, 0, 32, 16, 0, 0, 32, 16);
-                finalCtx.drawImage(signatureImg, 32, 0, 32, 16, 32, 0, 32, 16);
+            if (aplicarFirma) {
+                finalCtx.drawImage(signatureImg, 8, 8, 8, 8, 0, 0, 8, 8);
+                finalCtx.drawImage(signatureImg, 40, 8, 8, 8, 0, 0, 8, 8);
             }
 
             if(targetMaskLayer) {
@@ -467,14 +467,15 @@ if (checkSlimArms) {
 if (checkFirma) checkFirma.addEventListener('change', renderMosaicEnVivo);
 if (layerBaseRadio) layerBaseRadio.addEventListener('change', () => { if(ropesControls) ropesControls.style.display = 'none'; renderMosaicEnVivo(); });
 if (layerMaskRadio) layerMaskRadio.addEventListener('change', () => { if(ropesControls) ropesControls.style.display = 'block'; renderMosaicEnVivo(); });
-if (ropeColorPicker) ropeColorPicker.addEventListener('input', renderMosaicEnVivo);
-if (ropeGapSlider) ropeGapSlider.addEventListener('input', renderMosaicEnVivo);
+if (ropeColorPicker) ropeColorPicker.addEventListener('change', renderMosaicEnVivo);
+if (ropeGapSlider) ropeGapSlider.addEventListener('change', renderMosaicEnVivo);
 
 signatureImg.onload = () => {
     if (sigPreview) sigPreview.style.display = 'block';
     if (sigCtx) {
         sigCtx.clearRect(0, 0, 8, 8);
         sigCtx.drawImage(signatureImg, 8, 8, 8, 8, 0, 0, 8, 8);
+        sigCtx.drawImage(signatureImg, 40, 8, 8, 8, 0, 0, 8, 8);
     }
     renderMosaicEnVivo();
 };
