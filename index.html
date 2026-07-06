@@ -13,13 +13,13 @@
 <body>
 
     <div class="top-bar">
-        <button id="btn-open-studio" class="hamburger-btn"> <span data-i18n="btn_studio">STUDIO EDITOR</span></button>
-        <button id="btn-lang" class="lang-btn"> EN / ES</button>
+        <button id="btn-open-studio" class="hamburger-btn">🖌️ <span data-i18n="btn_studio">STUDIO EDITOR</span></button>
+        <button id="btn-lang" class="lang-btn">🌐 EN / ES</button>
     </div>
 
     <div id="editor-studio-modal" class="studio-modal">
         <div class="studio-header">
-            <h2> SkinsArts Studio</h2>
+            <h2>🎨 SkinsArts Studio</h2>
             <button id="btn-close-studio" class="close-btn">X</button>
         </div>
         
@@ -41,6 +41,7 @@
                         <button class="palette-color" style="background-color: #ffffff;" data-color="#ffffff"></button>
                         <button class="palette-color" style="background-color: #000000;" data-color="#000000"></button>
                         <button class="palette-color" style="background-color: #ff5555;" data-color="#ff5555"></button>
+                        <button class="palette-color" style="background-color: #444444;" data-color="#444444"></button>
                         <button id="btn-tool-eraser" class="palette-color eraser-icon" title="Eraser">🗑️</button>
                     </div>
                 </div>
@@ -54,7 +55,15 @@
                     <div class="control-row">
                         <button id="btn-pause-studio" class="tool-btn">▶️ <span data-i18n="play">Play</span></button>
                         <button id="btn-explode-view" class="tool-btn">🔲 <span data-i18n="explode">Explode</span></button>
+                        <button id="btn-flip-skin" class="tool-btn" style="border-color: #f39c12; color: #f39c12;">🔄 <span data-i18n="flip">Flip Skin</span></button>
                     </div>
+                    
+                    <div class="control-row" style="margin-top: -5px; margin-bottom: 15px;">
+                        <label style="font-size: 8px; color: #ddd; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="check-slim-arms"> <span data-i18n="slim_arms">Slim Arms (Alex)</span>
+                        </label>
+                    </div>
+
                     <div class="control-row">
                         <button class="tool-btn active" onclick="toggleLayer('inner')">Inner</button>
                         <button class="tool-btn active" onclick="toggleLayer('outer')">Outer</button>
@@ -118,7 +127,7 @@
 
         <div id="custom-panel" style="display: none; margin-top: 20px;">
             <p data-i18n="search_java">Search Java player:</p>
-            <input type="text" id="username-input" placeholder="Notch" style="padding: 10px; font-size: 12px; text-align: center;">
+            <input type="text" id="username-input" placeholder="Dream" style="padding: 10px; font-size: 12px; text-align: center;">
             <button id="fetch-api-btn" class="main-button" style="padding: 10px; font-size: 10px; margin-top: 10px;" data-i18n="search_btn">Search Skin</button>
             <p style="margin-top: 25px;" data-i18n="upload_base">Or upload a custom base (64x64):</p>
             <input type="file" id="local-base-input" accept="image/png" style="color: white; font-size: 10px;">
@@ -141,6 +150,34 @@
             <canvas id="signature-preview" width="8" height="8" style="width: 32px; height: 32px; display: none; margin: 10px auto 0; border: 2px solid #11caa0;"></canvas>
         </div>
 
+        <div class="advanced-mural-settings" style="margin-top: 30px; padding: 15px; border: 4px solid #45494D; background: #7289A0; text-align: left;">
+            <h3 style="color: #fff; margin-top: 0; font-size: 10px;" data-i18n="adv_title">Advanced Mural Settings</h3>
+            <div class="control-group">
+                <label data-i18n="adv_layer">Target Layer:</label>
+                <div style="display: flex; gap: 15px; font-size: 8px; margin-top: 5px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <input type="radio" name="mural_layer" value="inner" checked> <span data-i18n="adv_base">Base Layer (1)</span>
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <input type="radio" name="mural_layer" value="outer"> <span data-i18n="adv_mask">Mask Layer (2 - Ropes)</span>
+                    </label>
+                </div>
+            </div>
+            <div id="adv-ropes-controls" style="display: none; margin-top: 10px; border-top: 2px dashed #45494D; padding-top: 10px;">
+                <p style="font-size: 8px; color: #ddd;" data-i18n="adv_rope_desc">This mode clears original 40,8 sombrero and adds strings.</p>
+                <div style="display: flex; gap: 20px; align-items: center; margin-top: 10px;">
+                    <div class="color-picker-wrapper" style="align-items: flex-start;">
+                        <label style="font-size: 8px;" data-i18n="rope_color">String Color:</label>
+                        <input type="color" id="rope-color-picker" value="#444444">
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+                        <label style="font-size: 8px;" data-i18n="rope_gap">Back Gap:</label>
+                        <input type="range" id="rope-gap-slider" min="0" max="8" step="2" value="0" style="width: 100px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="mosaic-wrapper" class="mosaic-wrapper" style="display: none;">
             <div id="namemc-mosaic" class="namemc-mosaic"></div>
             <div class="mosaic-preview-3d">
@@ -158,6 +195,13 @@
         <footer class="footer-credits">
             <p data-i18n="footer_made">Created by</p>
             <a href="https://namemc.com/profile/Sonrojado" target="_blank" class="easter-egg">ArmandoLZ (Sonrojado)</a>
+            <div style="margin-top: 15px;">
+                <a href="https://github.com/srbrop/SkinsArts-Studio" target="_blank" class="github-link">
+                    <svg height="16" width="16" viewBox="0 0 16 16" fill="white" style="vertical-align: middle; margin-right: 5px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                    GitHub Project
+                </a>
+            </div>
+            <p style="font-size: 6px; color: #777; margin-top: 10px;">Flip logic based on <a href="https://github.com/babutxa" target="_blank" style="color: #777;">babutxa</a></p>
         </footer>
     </div>
 
