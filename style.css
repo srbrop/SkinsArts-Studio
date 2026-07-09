@@ -138,6 +138,16 @@ h3 {
     transform: scale(1.03);
 }
 
+/* Herramientas del Cropper (Zoom y Pan) */
+.cropper-tools {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
 .mode-free-btn {
     border-color: #f39c12;
     color: #f39c12;
@@ -308,12 +318,30 @@ canvas {
     gap: 10px;
 }
 
+/* Modificadores nativos para los selectores HEX (Color Pickers) */
 input[type="color"] {
+    -webkit-appearance: none;
     border: 3px solid #1C2228;
-    background: transparent;
+    background: #1C2228;
+    width: 60px;
+    height: 45px;
+    cursor: pointer;
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border: 2px solid #45494D;
+}
+input[type="color"]:hover::-webkit-color-swatch {
+    border-color: #11caa0;
+}
+
+/* Selector HEX grande para el Studio */
+#paint-color-picker {
     width: 100px;
     height: 60px;
-    cursor: pointer;
 }
 
 .palette-grid {
@@ -343,6 +371,14 @@ input[type="color"] {
 .eraser-icon {
     background: #45494D;
     font-size: 18px;
+}
+
+/* Herramientas de Historial (Undo/Redo) */
+.history-tools {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
 }
 
 .advanced-3d-controls {
@@ -375,6 +411,7 @@ input[type="color"] {
     padding: 8px;
     cursor: pointer;
     font-family: "Press Start 2P";
+    transition: all 0.2s ease;
 }
 
 .tool-btn.active {
