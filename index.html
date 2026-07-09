@@ -7,6 +7,9 @@
     <meta name="description" content="Free tool to generate 27-part skin arts for your NameMC profile. Crop images, preview in 3D, edit pixels, and download ready-to-upload Minecraft skins.">
     <meta name="keywords" content="Minecraft, NameMC, skin art, generator, 72x24, skin history, crop image for namemc, skinsarts, 3D skin editor">
     <meta name="author" content="ArmandoLZ (Sonrojado)">
+    
+    <link rel="icon" type="image/png" href="logo1.png">
+
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 </head>
@@ -29,19 +32,30 @@
                 <div class="paint-canvas-container">
                     <canvas id="editor-skin-canvas" width="64" height="64"></canvas>
                 </div>
+
+                <div class="history-tools" style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px;">
+                    <button id="btn-undo" class="tool-btn" style="padding: 10px; font-size: 8px;">⬅️ Undo (4)</button>
+                    <button id="btn-redo" class="tool-btn" style="padding: 10px; font-size: 8px;">Redo ➡️</button>
+                </div>
                 
                 <div class="editor-tools">
                     <div class="color-picker-wrapper">
                         <label style="font-size: 10px;" data-i18n="color_label">Color:</label>
-                        <input type="color" id="paint-color-picker" value="#11caa0">
+                        <input type="color" id="paint-color-picker" value="#11caa0" style="cursor: pointer;">
                     </div>
-                    <div class="palette-grid">
-                        <button class="palette-color" style="background-color: #5555ff;" data-color="#5555ff"></button>
-                        <button class="palette-color" style="background-color: #11caa0;" data-color="#11caa0"></button>
-                        <button class="palette-color" style="background-color: #ffffff;" data-color="#ffffff"></button>
+                    <div class="palette-grid" id="studio-palette">
                         <button class="palette-color" style="background-color: #000000;" data-color="#000000"></button>
-                        <button class="palette-color" style="background-color: #ff5555;" data-color="#ff5555"></button>
                         <button class="palette-color" style="background-color: #444444;" data-color="#444444"></button>
+                        <button class="palette-color" style="background-color: #ffffff;" data-color="#ffffff"></button>
+                        <button class="palette-color" style="background-color: #ff0000;" data-color="#ff0000"></button>
+                        <button class="palette-color" style="background-color: #ff7f00;" data-color="#ff7f00"></button>
+                        <button class="palette-color" style="background-color: #ffff00;" data-color="#ffff00"></button>
+    
+                        <button class="palette-color" style="background-color: #00ff00;" data-color="#00ff00"></button>
+                        <button class="palette-color" style="background-color: #11caa0;" data-color="#11caa0"></button>
+                        <button class="palette-color" style="background-color: #00ffff;" data-color="#00ffff"></button>
+                        <button class="palette-color" style="background-color: #0000ff;" data-color="#0000ff"></button>
+                        <button class="palette-color" style="background-color: #8b00ff;" data-color="#8b00ff"></button>
                         <button id="btn-tool-eraser" class="palette-color eraser-icon" title="Eraser">🗑️</button>
                     </div>
                 </div>
@@ -107,8 +121,19 @@
                 </select>
             </div>
             <button id="btn-free-mode" class="main-button mode-free-btn" data-i18n="free_mode">Enable Free Mode</button>
+            
             <div class="cropper-container" style="max-width: 100%; max-height: 400px; margin-top: 15px;">
                 <img id="image-to-crop" src="" style="display: block; max-width: 100%;">
+            </div>
+
+            <div class="cropper-tools" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;">
+                <button id="btn-zoom-in" class="main-button" style="padding: 10px; font-size: 14px;" title="Zoom In">➕</button>
+                <button id="btn-zoom-out" class="main-button" style="padding: 10px; font-size: 14px;" title="Zoom Out">➖</button>
+                
+                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+                    <label style="font-size: 8px; color: #fff;">Pan Horizontal:</label>
+                    <input type="range" id="pan-x-slider" min="-100" max="100" value="0" style="width: 150px;">
+                </div>
             </div>
         </div>
 
@@ -165,15 +190,32 @@
             </div>
             <div id="adv-ropes-controls" style="display: none; margin-top: 10px; border-top: 2px dashed #45494D; padding-top: 10px;">
                 <p style="font-size: 8px; color: #ddd;" data-i18n="adv_rope_desc">This mode clears original 40,8 sombrero and adds strings.</p>
-                <div style="display: flex; gap: 20px; align-items: center; margin-top: 10px;">
+                <div style="display: flex; gap: 20px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+                    
                     <div class="color-picker-wrapper" style="align-items: flex-start;">
                         <label style="font-size: 8px;" data-i18n="rope_color">String Color:</label>
-                        <input type="color" id="rope-color-picker" value="#444444">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="color" id="rope-color-picker" value="#444444" style="cursor: pointer;">
+                            <div class="palette-grid" id="rope-palette" style="display: flex; gap: 5px;">
+                                <button class="palette-color" style="background-color: #000000; width: 20px; height: 20px;" data-color="#000000"></button>
+                                <button class="palette-color" style="background-color: #ffffff; width: 20px; height: 20px;" data-color="#ffffff"></button>
+                                <button class="palette-color" style="background-color: #b9b9b9; width: 20px; height: 20px;" data-color="#b9b9b9"></button>
+                                <button class="palette-color" style="background-color: #f5703c; width: 20px; height: 20px;" data-color="#f5703c"></button>
+                                <button class="palette-color" style="background-color: #202020; width: 20px; height: 20px;" data-color="#202020"></button>
+                            </div>
+                        </div>
                     </div>
+
                     <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
                         <label style="font-size: 8px;" data-i18n="rope_gap">Back Gap:</label>
                         <input type="range" id="rope-gap-slider" min="0" max="8" step="2" value="0" style="width: 100px;">
                     </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+                        <label style="font-size: 8px;">Y-Offset:</label>
+                        <input type="range" id="rope-y-slider" min="-3" max="4" step="1" value="0" style="width: 100px;">
+                    </div>
+
                 </div>
             </div>
         </div>
