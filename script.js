@@ -76,6 +76,7 @@ const layerMaskRadio = document.querySelector('input[name="mural_layer"][value="
 const ropesControls = document.getElementById('adv-ropes-controls');
 const ropeColorPicker = document.getElementById('rope-color-picker');
 const ropeGapSlider = document.getElementById('rope-gap-slider');
+const ropeYSlider = document.getElementById('rope-y-slider');
 const mosaicWrapper = document.getElementById('mosaic-wrapper');
 const mosaicContainer = document.getElementById('namemc-mosaic');
 const preview3dLabel = document.getElementById('preview-3d-label');
@@ -87,6 +88,12 @@ const basePreviewCanvas = document.getElementById('base-preview-canvas');
 const previewCtx = basePreviewCanvas ? basePreviewCanvas.getContext('2d') : null;
 const checkSlimArms = document.getElementById('check-slim-arms');
 
+const panXSlider = document.getElementById('pan-x-slider');
+const btnZoomIn = document.getElementById('btn-zoom-in');
+const btnZoomOut = document.getElementById('btn-zoom-out');
+const btnUndo = document.getElementById('btn-undo');
+const btnRedo = document.getElementById('btn-redo');
+
 if (canvas) { canvas.width = 72; canvas.height = 24; }
 if (previewCtx) previewCtx.imageSmoothingEnabled = false;
 if (eCtx) eCtx.imageSmoothingEnabled = false;
@@ -97,6 +104,7 @@ baseSkinImg.crossOrigin = "Anonymous";
 let signatureImg = new Image();
 signatureImg.crossOrigin = "Anonymous"; 
 let cropper = null;
+let cropTimeout;
 let isFreeMode = false;
 let isPainting = false;
 let selectedColor = "#11caa0";
@@ -104,6 +112,52 @@ let studioSkinViewer = null;
 let mosaicSkinViewer = null;
 let isExploded = false;
 let generatedSkinsData = [];
+
+let undoStack = [];
+let redoStack = [];
+
+function updateHistoryButtons() {
+    if (btnUndo) btnUndo.innerText = `⬅️ Undo (${Math.max(0, undoStack.length - 1)})`;
+    if (btnRedo) btnRedo.innerText = `Redo ➡️ (${redoStack.length})`;
+}
+
+function saveCanvasState() {
+    if (!editorSkinCanvas) return;
+    undoStack.push(editorSkinCanvas.toDataURL());
+    if (undoStack.length > 5) undoStack.shift(); 
+    redoStack = []; 
+    updateHistoryButtons();
+}
+
+function restoreCanvasState(dataUrl) {
+    let img = new Image();
+    img.onload = () => {
+        eCtx.clearRect(0, 0, 64, 64);
+        eCtx.drawImage(img, 0, 0);
+        sync3D();
+    };
+    img.src = dataUrl;
+    updateHistoryButtons();
+}
+
+if (btnUndo) {
+    btnUndo.addEventListener('click', () => {
+        if (undoStack.length > 1) { 
+            redoStack.push(undoStack.pop());
+            restoreCanvasState(undoStack[undoStack.length - 1]);
+        }
+    });
+}
+
+if (btnRedo) {
+    btnRedo.addEventListener('click', () => {
+        if (redoStack.length > 0) {
+            let state = redoStack.pop();
+            undoStack.push(state);
+            restoreCanvasState(state);
+        }
+    });
+}
 
 function initStudio3D() {
     if (!studioSkinViewer && document.getElementById("skin-3d-viewer")) {
@@ -329,6 +383,7 @@ if (document.getElementById('btn-flip-skin')) {
         }
         renderMosaicEnVivo();
         sync3D();
+        saveCanvasState();
     });
 }
 
@@ -353,6 +408,7 @@ function renderMosaicEnVivo() {
     const targetMaskLayer = layerMaskRadio ? layerMaskRadio.checked : false;
     const aplicarFirma = (checkFirma && checkFirma.checked && signatureImg.src);
     let gap = ropeGapSlider ? parseInt(ropeGapSlider.value) : 0;
+    let yOffset = ropeYSlider ? parseInt(ropeYSlider.value) : 0;
     const modelType = (checkSlimArms && checkSlimArms.checked) ? "slim" : "default";
 
     for (let y = 0; y < filas; y++) {
@@ -375,16 +431,18 @@ function renderMosaicEnVivo() {
                 finalCtx.clearRect(40, 8, 8, 8); 
                 finalCtx.drawImage(canvas, x * tamano, y * tamano, tamano, tamano, 40, 8, tamano, tamano);
                 finalCtx.fillStyle = ropeColorPicker ? ropeColorPicker.value : "#444444";
-                finalCtx.fillRect(32, 11, 8, 1);
+                
+                let baseRopeY = 11 + yOffset;
+                finalCtx.fillRect(32, baseRopeY, 8, 1);
                 
                 if(gap === 0) {
-                    finalCtx.fillRect(48, 11, 16, 1);
+                    finalCtx.fillRect(48, baseRopeY, 16, 1);
                 } else {
                     let backLeftWidth = 4 - (gap / 2);
-                    finalCtx.fillRect(48, 11, 8 + backLeftWidth, 1);
+                    finalCtx.fillRect(48, baseRopeY, 8 + backLeftWidth, 1);
                     let backRightStart = 60 + (gap / 2);
                     let backRightWidth = 64 - backRightStart;
-                    if (backRightWidth > 0) finalCtx.fillRect(backRightStart, 11, backRightWidth, 1);
+                    if (backRightWidth > 0) finalCtx.fillRect(backRightStart, baseRopeY, backRightWidth, 1);
                 }
             } else {
                 finalCtx.drawImage(canvas, x * tamano, y * tamano, tamano, tamano, caraX, caraY, tamano, tamano);
@@ -468,7 +526,8 @@ if (checkFirma) checkFirma.addEventListener('change', renderMosaicEnVivo);
 if (layerBaseRadio) layerBaseRadio.addEventListener('change', () => { if(ropesControls) ropesControls.style.display = 'none'; renderMosaicEnVivo(); });
 if (layerMaskRadio) layerMaskRadio.addEventListener('change', () => { if(ropesControls) ropesControls.style.display = 'block'; renderMosaicEnVivo(); });
 if (ropeColorPicker) ropeColorPicker.addEventListener('change', renderMosaicEnVivo);
-if (ropeGapSlider) ropeGapSlider.addEventListener('change', renderMosaicEnVivo);
+if (ropeGapSlider) ropeGapSlider.addEventListener('input', renderMosaicEnVivo);
+if (ropeYSlider) ropeYSlider.addEventListener('input', renderMosaicEnVivo);
 
 signatureImg.onload = () => {
     if (sigPreview) sigPreview.style.display = 'block';
@@ -480,10 +539,26 @@ signatureImg.onload = () => {
     renderMosaicEnVivo();
 };
 
+if (btnZoomIn) btnZoomIn.addEventListener('click', () => { if (cropper) cropper.zoom(0.1); });
+if (btnZoomOut) btnZoomOut.addEventListener('click', () => { if (cropper) cropper.zoom(-0.1); });
+
+let lastPanX = 0;
+if (panXSlider) {
+    panXSlider.addEventListener('input', (e) => {
+        let currentPan = parseInt(e.target.value);
+        let diff = currentPan - lastPanX;
+        if (cropper) cropper.move(diff * 2, 0); 
+        lastPanX = currentPan;
+    });
+}
+
 if (dropZone && fileInput) {
     dropZone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => { 
-        if (e.target.files.length > 0) iniciarProcesamiento(e.target.files[0]); 
+        if (e.target.files.length > 0) {
+            iniciarProcesamiento(e.target.files[0]); 
+            if(panXSlider) { panXSlider.value = 0; lastPanX = 0; }
+        }
     });
     dropZone.addEventListener('dragover', (e) => { 
         e.preventDefault(); 
@@ -495,7 +570,10 @@ if (dropZone && fileInput) {
     dropZone.addEventListener('drop', (e) => { 
         e.preventDefault(); 
         dropZone.style.backgroundColor = '#7289A0'; 
-        if (e.dataTransfer.files.length > 0) iniciarProcesamiento(e.dataTransfer.files[0]); 
+        if (e.dataTransfer.files.length > 0) {
+            iniciarProcesamiento(e.dataTransfer.files[0]); 
+            if(panXSlider) { panXSlider.value = 0; lastPanX = 0; }
+        }
     });
 }
 
@@ -505,6 +583,7 @@ window.addEventListener('paste', (evento) => {
     for (let i = 0; i < items.length; i++) {
         if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
             iniciarProcesamiento(items[i].getAsFile());
+            if(panXSlider) { panXSlider.value = 0; lastPanX = 0; }
             break;
         }
     }
@@ -525,10 +604,25 @@ function iniciarProcesamiento(archivo) {
             }
             if (imageToCrop) {
                 cropper = new Cropper(imageToCrop, {
-                    aspectRatio: 72 / 24, viewMode: 1, dragMode: 'move',     
-                    crop(event) { redibujarLienzoRostros(); },
-                    cropend(event) { renderMosaicEnVivo(); },
-                    ready() { renderMosaicEnVivo(); }
+                    aspectRatio: 72 / 24,
+                    viewMode: 1,
+                    dragMode: 'move',     
+                    crop(event) { 
+                        clearTimeout(cropTimeout);
+                        cropTimeout = setTimeout(() => {
+                            redibujarLienzoRostros(); 
+                        }, 50);
+                    },
+                    cropend(event) {
+                        clearTimeout(cropTimeout);
+                        redibujarLienzoRostros();
+                        renderMosaicEnVivo(); 
+                    },
+                    ready() {
+                        clearTimeout(cropTimeout);
+                        redibujarLienzoRostros();
+                        renderMosaicEnVivo(); 
+                    }
                 });
             }
         };
@@ -574,7 +668,7 @@ function redibujarLienzoRostros() {
         ctx.imageSmoothingEnabled = false; 
     } else { 
         ctx.imageSmoothingEnabled = true; 
-        ctx.imageSmoothingQuality = (selectCalidad && selectCalidad.value === 'high') ? 'high' : 'low'; 
+        ctx.imageSmoothingQuality = (selectCalidad && selectCalidad.value === 'high') ? 'high' : 'high'; 
     }
     ctx.drawImage(lienzoRecortado, 0, 0, 72, 24);
 }
@@ -640,6 +734,11 @@ if (btnOpenStudio) {
             if(baseSkinImg.src && !baseSkinImg.src.endsWith("index.html")) { eCtx.drawImage(baseSkinImg, 0, 0, 64, 64); }
         }
         sync3D(); 
+        setTimeout(() => { 
+            undoStack = [editorSkinCanvas.toDataURL()];
+            redoStack = [];
+            updateHistoryButtons();
+        }, 100);
     });
 }
 
@@ -653,7 +752,7 @@ if (document.getElementById('paint-color-picker')) {
     document.getElementById('paint-color-picker').addEventListener('input', (e) => { selectedColor = e.target.value; });
 }
 
-document.querySelectorAll('.palette-color').forEach(b => {
+document.querySelectorAll('#studio-palette .palette-color').forEach(b => {
     b.addEventListener('click', (e) => {
         if(b.id === 'btn-tool-eraser') { 
             selectedColor = "rgba(0,0,0,0)"; 
@@ -665,12 +764,30 @@ document.querySelectorAll('.palette-color').forEach(b => {
     });
 });
 
+document.querySelectorAll('#rope-palette .palette-color').forEach(b => {
+    b.addEventListener('click', (e) => {
+        const ropeColor = b.getAttribute('data-color'); 
+        const picker = document.getElementById('rope-color-picker');
+        if (picker) {
+            picker.value = ropeColor; 
+            renderMosaicEnVivo();
+        }
+    });
+});
+
 let syncTimeoutStudio = null;
 if (editorSkinCanvas) {
     editorSkinCanvas.addEventListener('mousedown', (e) => { isPainting = true; pintarPixel(e); });
     editorSkinCanvas.addEventListener('mousemove', (e) => { if (isPainting) pintarPixel(e); });
 }
-window.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; sync3D(); } });
+
+window.addEventListener('mouseup', () => { 
+    if (isPainting) { 
+        isPainting = false; 
+        sync3D(); 
+        saveCanvasState(); 
+    } 
+});
 
 function pintarPixel(e) {
     if (!editorSkinCanvas || !eCtx) return;
