@@ -10,7 +10,7 @@ const dict = {
         slim_arms: "Slim Arms (Alex)", clear_all: "Clear All", footer_made: "Created by", sig_title: "Skin Signature (Watermark)", sig_desc: "Stamp your 8x8 face at the (0,0) texture corner.",
         sig_btn: "Load Face", sig_check: "Apply signature to files", skin_sel: "Selected Skin",
         adv_title: "Advanced Mural Settings", adv_layer: "Target Layer:", adv_base: "Base Layer (1)",
-        adv_mask: "Mask Layer (2 - Ropes)", adv_rope_desc: "This mode clears original 40,8 sombrero and adds strings.", rope_color: "String Color:", rope_gap: "Back Gap:",
+        adv_mask: "Mask Layer (2 - Ropes)", adv_rope_desc: "This mode clears original 40,8 sombrero and adds strings.", rope_color: "String Color:", rope_gap: "Back Gap:", enable_rope: "Enable Rope Strings",
         readme: "==================================================\n   NAMEMC SKIN ART INSTRUCTIONS\n==================================================\n* IMPORTANT: It is NOT recommended to change your skin via the Minecraft website. Please use the official Minecraft Launcher for best results, then press F5 to refresh if viewing on a mobile phone or browser.\n* NOTE ON RECYCLED SKINS: This tool automatically injects an imperceptible pixel variant into duplicate files, forcing NameMC to recognize each one as completely unique!\n\nUPLOAD FILES IN REVERSE ORDER:\n1. Upload 'c(9).png' first.\n2. Wait for NameMC to cache it.\n3. Upload backwards until 'a(1).png'.\n\nCreated by ArmandoLZ (Sonrojado) with SkinsArts."
     },
     es: {
@@ -24,7 +24,7 @@ const dict = {
         slim_arms: "Brazos Delgados (Alex)", clear_all: "Limpiar Todo", footer_made: "Esta página fue hecha por", sig_title: "Firma de Skin (Marca de agua)", sig_desc: "Estampa tu cara 8x8 en la esquina (0,0) del archivo.",
         sig_btn: "Cargar Cara", sig_check: "Aplicar firma en los archivos", skin_sel: "Skin Seleccionada",
         adv_title: "Ajustes Avanzados de Mural", adv_layer: "Capa de Destino:", adv_base: "Capa Base (1)",
-        adv_mask: "Capa de Máscara (2 - Cuerdas)", adv_rope_desc: "Limpia el sombrero original 40,8 y añade cuerdas.", rope_color: "Color de Cuerdas:", rope_gap: "Apertura Trasera:",
+        adv_mask: "Capa de Máscara (2 - Cuerdas)", adv_rope_desc: "Limpia el sombrero original 40,8 y añade cuerdas.", rope_color: "Color de Cuerdas:", rope_gap: "Apertura Trasera:", enable_rope: "Activar línea de cuerda",
         readme: "==================================================\n   INSTRUCCIONES PARA NAMEMC (SKIN ART)\n==================================================\n* IMPORTANTE: NO se recomienda cambiar la skin desde la página web de Minecraft. De preferencia hazlo desde el Launcher Oficial y presiona F5 para actualizar si lo estás viendo en un celular o navegador.\n* NOTA SOBRE SKINS RECICLADAS: ¡Esta herramienta inyecta automáticamente una variación de píxel imperceptible en archivos duplicados, obligando a NameMC a reconocer cada una como única!\n\nPASOS PARA SUBIR (ORDEN INVERSO):\n1. Sube primero el archivo 'c(9).png'.\n2. Espera a que NameMC lo registre.\n3. Sube en reversa hasta la 'a(1).png'.\n\nCreado por ArmandoLZ (Sonrojado) con SkinsArts."
     }
 };
@@ -77,6 +77,7 @@ const ropesControls = document.getElementById('adv-ropes-controls');
 const ropeColorPicker = document.getElementById('rope-color-picker');
 const ropeGapSlider = document.getElementById('rope-gap-slider');
 const ropeYSlider = document.getElementById('rope-y-slider');
+const checkEnableRope = document.getElementById('check-enable-rope');
 const mosaicWrapper = document.getElementById('mosaic-wrapper');
 const mosaicContainer = document.getElementById('namemc-mosaic');
 const preview3dLabel = document.getElementById('preview-3d-label');
@@ -430,19 +431,24 @@ function renderMosaicEnVivo() {
             if(targetMaskLayer) {
                 finalCtx.clearRect(40, 8, 8, 8); 
                 finalCtx.drawImage(canvas, x * tamano, y * tamano, tamano, tamano, 40, 8, tamano, tamano);
-                finalCtx.fillStyle = ropeColorPicker ? ropeColorPicker.value : "#444444";
                 
-                let baseRopeY = 11 + yOffset;
-                finalCtx.fillRect(32, baseRopeY, 8, 1);
+                const drawRope = checkEnableRope ? checkEnableRope.checked : true;
                 
-                if(gap === 0) {
-                    finalCtx.fillRect(48, baseRopeY, 16, 1);
-                } else {
-                    let backLeftWidth = 4 - (gap / 2);
-                    finalCtx.fillRect(48, baseRopeY, 8 + backLeftWidth, 1);
-                    let backRightStart = 60 + (gap / 2);
-                    let backRightWidth = 64 - backRightStart;
-                    if (backRightWidth > 0) finalCtx.fillRect(backRightStart, baseRopeY, backRightWidth, 1);
+                if (drawRope) {
+                    finalCtx.fillStyle = ropeColorPicker ? ropeColorPicker.value : "#444444";
+                    
+                    let baseRopeY = 11 + yOffset;
+                    finalCtx.fillRect(32, baseRopeY, 8, 1);
+                    
+                    if(gap === 0) {
+                        finalCtx.fillRect(48, baseRopeY, 16, 1);
+                    } else {
+                        let backLeftWidth = 4 - (gap / 2);
+                        finalCtx.fillRect(48, baseRopeY, 8 + backLeftWidth, 1);
+                        let backRightStart = 60 + (gap / 2);
+                        let backRightWidth = 64 - backRightStart;
+                        if (backRightWidth > 0) finalCtx.fillRect(backRightStart, baseRopeY, backRightWidth, 1);
+                    }
                 }
             } else {
                 finalCtx.drawImage(canvas, x * tamano, y * tamano, tamano, tamano, caraX, caraY, tamano, tamano);
@@ -528,6 +534,7 @@ if (layerMaskRadio) layerMaskRadio.addEventListener('change', () => { if(ropesCo
 if (ropeColorPicker) ropeColorPicker.addEventListener('change', renderMosaicEnVivo);
 if (ropeGapSlider) ropeGapSlider.addEventListener('input', renderMosaicEnVivo);
 if (ropeYSlider) ropeYSlider.addEventListener('input', renderMosaicEnVivo);
+if (checkEnableRope) checkEnableRope.addEventListener('change', renderMosaicEnVivo);
 
 signatureImg.onload = () => {
     if (sigPreview) sigPreview.style.display = 'block';
