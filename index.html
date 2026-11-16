@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinsArts Studio — Minecraft NameMC Skin Art Generator</title>
+    <meta name="description" content="Generador minimalista de murales de 27 skins para NameMC con detección automática 72x24, vista previa 3D en vivo, API oficial de Minecraft y exportación ZIP.">
+    <meta name="keywords" content="Minecraft, NameMC, skin art, generator, 72x24, skin history, crop image for namemc, skinsarts, AutoNameMC">
+    <meta name="author" content="ArmandoLZ (Sonrojado)">
+    <link rel="icon" type="image/png" href="logo1.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="topbar-left">
+                <a href="index.html" class="topbar-brand">
+                    <img src="logo2.png" alt="SkinsArts" class="brand-logo" onerror="this.style.display='none'">
+                    <span class="brand-title" data-i18n="title">SkinsArts Studio</span>
+                </a>
+                <nav class="topbar-nav">
+                    <a href="index.html" class="nav-link active" data-i18n="nav_generator">Generator</a>
+                    <a href="script/index.html" class="nav-link" data-i18n="nav_scripts">Scripts AutoNameMC</a>
+                </nav>
+            </div>
+
+            <div class="topbar-actions">
+                <a href="https://github.com/srbrop/SkinsArts-Studio" target="_blank" rel="noopener" class="btn btn-ghost btn-icon" title="GitHub">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                </a>
+                <button id="btn-theme" class="btn btn-ghost btn-icon" title="Cambiar Tema">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"/></svg>
+                </button>
+                <button id="btn-lang" class="btn btn-secondary btn-xs">
+                    <span id="lang-indicator">ES / EN</span>
+                </button>
+                <a href="script/index.html" class="btn btn-primary btn-xs">
+                    <span data-i18n="nav_scripts_btn">Scripts & Tutorial →</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="workspace-grid">
+            <section class="card col-panel">
+                <div class="card-header-row">
+                    <h2 class="card-title" data-i18n="adjust_crop">Imagen y Recorte (72×24)</h2>
+                    <span id="img-dimension-badge" class="badge-pill badge-soft" data-i18n="waiting_img">Sin imagen</span>
+                </div>
+
+                <div id="drop-zone" class="drop-zone">
+                    <div class="drop-zone-inner">
+                        <div class="upload-icon-circle">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <p class="drop-text" data-i18n="dropzone_text">Arrastra tu imagen, haz clic o presiona CTRL + V</p>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+
+                <div id="editor-panel" class="editor-panel">
+                    <div class="controls-toolbar">
+                        <select id="select-calidad" class="input-pill select-pill" style="flex: 1;">
+                            <option value="nearest" data-i18n="q_nearest">Vecino más próximo (Píxeles puros)</option>
+                            <option value="bilinear" data-i18n="q_bilinear">Bilineal (Suave)</option>
+                            <option value="high" data-i18n="q_high">Alta Calidad (Lanczos)</option>
+                        </select>
+                        <button id="btn-free-mode" class="btn btn-secondary btn-sm" data-i18n="free_mode">Modo Libre</button>
+                    </div>
+
+                    <div class="cropper-stage" id="cropper-stage">
+                        <div id="cropper-empty-hint" class="cropper-empty-hint">
+                            <span data-i18n="cropper_placeholder">Pega o arrastra cualquier imagen (72×24 se ajusta 1:1 en automático)</span>
+                        </div>
+                        <img id="image-to-crop" src="" alt="Crop source" style="display: none; max-width: 100%;">
+                    </div>
+
+                    <div class="cropper-tools-bar">
+                        <div class="btn-group">
+                            <button id="btn-zoom-in" class="btn btn-secondary btn-icon" title="Zoom In">+</button>
+                            <button id="btn-zoom-out" class="btn btn-secondary btn-icon" title="Zoom Out">−</button>
+                            <button id="btn-fit-72" class="btn btn-secondary btn-xs" data-i18n="fit_exact">Ajustar 1:1</button>
+                        </div>
+                        <div class="slider-inline">
+                            <label class="field-label" data-i18n="pan_h">Mover X</label>
+                            <input type="range" id="pan-x-slider" min="-100" max="100" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-72-box">
+                    <div class="preview-72-header">
+                        <span class="field-label" data-i18n="result_label">Resultado 72×24 (Píxeles Puros)</span>
+                        <span class="mono-tag">72 × 24 px</span>
+                    </div>
+                    <div class="canvas-72-frame">
+                        <canvas id="main-canvas" width="72" height="24"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-stack">
+                <div class="card">
+                    <div class="card-header-row">
+                        <h2 class="card-title" data-i18n="choose_base">Skin Base</h2>
+                        <div class="base-header-meta">
+                            <span id="skin-type-badge" class="badge-pill badge-soft">Skin A: Steve (4px)</span>
+                            <canvas id="base-preview-canvas" width="64" height="64"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="distribution-selector-wrap">
+                        <div class="segmented-pills segmented-3">
+                            <label class="segment-option" title="Usa la skin activa (A, B o C) para las 27 skins del mural">
+                                <input type="radio" name="skin_dist" value="single" checked>
+                                <span id="dist-single-label" data-i18n="dist_single">1 Skin (Solo A)</span>
+                            </label>
+                            <label class="segment-option" title="Intercalado en orden inverso: c(9)=A, c(8)=B, c(7)=C...">
+                                <input type="radio" name="skin_dist" value="cycle">
+                                <span data-i18n="dist_cycle">Intercalado (c9=A, c8=B, c7=C)</span>
+                            </label>
+                            <label class="segment-option" title="Fila A: a(1)-a(9) = Skin A, Fila B: b(1)-b(9) = Skin B, Fila C: c(1)-c(9) = Skin C">
+                                <input type="radio" name="skin_dist" value="rows">
+                                <span data-i18n="dist_rows">Por Filas (A, B, C)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="slot-tabs-grid" id="slot-tabs-container">
+                        <button type="button" class="slot-tab active" data-slot="0" id="slot-tab-0">
+                            <canvas class="slot-mini-canvas" id="slot-canvas-0" width="8" height="8"></canvas>
+                            <div class="slot-tab-info">
+                                <span class="slot-tab-title">Skin A</span>
+                                <span class="slot-tab-sub" id="slot-sub-0">Steve</span>
+                            </div>
+                        </button>
+                        <button type="button" class="slot-tab" data-slot="1" id="slot-tab-1">
+                            <canvas class="slot-mini-canvas" id="slot-canvas-1" width="8" height="8"></canvas>
+                            <div class="slot-tab-info">
+                                <span class="slot-tab-title">Skin B</span>
+                                <span class="slot-tab-sub" id="slot-sub-1">Alex</span>
+                            </div>
+                        </button>
+                        <button type="button" class="slot-tab" data-slot="2" id="slot-tab-2">
+                            <canvas class="slot-mini-canvas" id="slot-canvas-2" width="8" height="8"></canvas>
+                            <div class="slot-tab-info">
+                                <span class="slot-tab-title">Skin C</span>
+                                <span class="slot-tab-sub" id="slot-sub-2">NameMC</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="base-options">
+                        <button class="btn btn-secondary btn-xs base-btn active" id="btn-steve">Steve</button>
+                        <button class="btn btn-secondary btn-xs base-btn" id="btn-alex">Alex</button>
+                        <button class="btn btn-secondary btn-xs base-btn" id="btn-namemc">NameMC</button>
+                        <button class="btn btn-secondary btn-xs base-btn" id="btn-custom" data-i18n="custom">Personalizada</button>
+                    </div>
+
+                    <div id="custom-panel" class="custom-panel">
+                        <div class="search-row">
+                            <input type="text" id="username-input" class="input-pill" placeholder="ej. Dream o Dream, Notch, MrBeast">
+                            <button id="fetch-api-btn" class="btn btn-primary btn-sm" data-i18n="search_btn">Buscar</button>
+                        </div>
+                        <div class="custom-subrow">
+                            <span id="skin-api-status" class="status-note" data-i18n="mojang_api_hint">API Oficial de Minecraft</span>
+                            <label class="btn btn-secondary btn-xs file-upload-label">
+                                <span id="upload-slot-label" data-i18n="upload_base_short">Subir PNG (Skin A)</span>
+                                <input type="file" id="local-base-input" accept="image/png" hidden>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" title="Estampa tu cara 8×8 en la esquina (0,0) de cada archivo.">
+                    <div class="card-header-row">
+                        <h2 class="card-title" data-i18n="sig_title">Firma de Skin (0,0)</h2>
+                        <div class="sig-header-right">
+                            <canvas id="signature-preview" width="8" height="8"></canvas>
+                            <label class="toggle-pill">
+                                <input type="checkbox" id="check-firma" checked>
+                                <span data-i18n="sig_check_short">Activa</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="search-row">
+                        <input type="text" id="signature-nick" class="input-pill" placeholder="Minecraft Nickname" style="height: 26px; font-size: 11.5px;">
+                        <button id="btn-load-signature" class="btn btn-secondary btn-xs" data-i18n="sig_btn">Cargar Cara</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-row">
+                        <h2 class="card-title" data-i18n="adv_title">Ajustes Avanzados de Mural</h2>
+                    </div>
+
+                    <div class="adv-inline-controls">
+                        <button id="btn-flip-skin" class="btn btn-secondary btn-xs" title="Voltear orientación de skin">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                            <span data-i18n="flip">Voltear</span>
+                        </button>
+
+                        <label class="checkbox-pill" title="Skin delgada con brazos de 3px (Alex)">
+                            <input type="checkbox" id="check-slim-arms">
+                            <span data-i18n="slim_arms">Delgada (Alex)</span>
+                        </label>
+
+                        <label class="checkbox-pill" title="El archivo a(1).png mantiene tu skin limpia original sin taparse con el mural">
+                            <input type="checkbox" id="check-preserve-a1">
+                            <span data-i18n="preserve_a1">Limpia en a(1)</span>
+                        </label>
+                    </div>
+
+                    <div class="layer-selector-block">
+                        <div class="segmented-pills">
+                            <label class="segment-option">
+                                <input type="radio" name="mural_layer" value="inner" checked>
+                                <span data-i18n="adv_base">Capa Base (1)</span>
+                            </label>
+                            <label class="segment-option">
+                                <input type="radio" name="mural_layer" value="outer">
+                                <span data-i18n="adv_mask">Capa Máscara (Cuerdas)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="adv-ropes-controls" class="ropes-box" style="display: none;">
+                        <div class="ropes-header">
+                            <label class="checkbox-pill">
+                                <input type="checkbox" id="check-enable-rope" checked>
+                                <span data-i18n="enable_rope">Cuerdas</span>
+                            </label>
+                            <div class="rope-color-group">
+                                <input type="color" id="rope-color-picker" value="#444444">
+                                <div class="palette-swatches" id="rope-palette">
+                                    <button type="button" class="swatch-dot" style="background: #000000;" data-color="#000000"></button>
+                                    <button type="button" class="swatch-dot" style="background: #ffffff;" data-color="#ffffff"></button>
+                                    <button type="button" class="swatch-dot" style="background: #b9b9b9;" data-color="#b9b9b9"></button>
+                                    <button type="button" class="swatch-dot" style="background: #f5703c;" data-color="#f5703c"></button>
+                                    <button type="button" class="swatch-dot" style="background: #202020;" data-color="#202020"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ropes-sliders-grid">
+                            <div class="slider-inline">
+                                <label class="field-label"><span data-i18n="rope_gap">Apertura:</span> <strong id="rope-gap-val">0</strong></label>
+                                <input type="range" id="rope-gap-slider" min="0" max="8" step="2" value="0">
+                            </div>
+                            <div class="slider-inline">
+                                <label class="field-label"><span>Offset Y:</span> <strong id="rope-y-val">0</strong></label>
+                                <input type="range" id="rope-y-slider" min="-3" max="4" step="1" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card col-panel col-preview">
+                <div class="card-header-row">
+                    <h2 class="card-title" data-i18n="mosaic_title">Vista Previa 27 Skins NameMC</h2>
+                    <span id="preview-3d-label" class="badge-pill badge-solid">Seleccionada: (A1)</span>
+                </div>
+
+                <div id="mosaic-wrapper" class="mosaic-showcase">
+                    <div class="mosaic-grid-container">
+                        <div id="namemc-mosaic" class="namemc-mosaic"></div>
+                    </div>
+
+                    <div class="mosaic-preview-3d">
+                        <div class="viewer-3d-stage">
+                            <span id="viewer-model-indicator" class="badge-pill badge-outline viewer-model-tag">Steve (4px)</span>
+                            <canvas id="mosaic-3d-viewer" width="150" height="175"></canvas>
+                            <button id="btn-pause-mosaic" class="btn btn-secondary btn-xs viewer-play-btn">
+                                <span data-i18n="play">Girar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="export-actions">
+                    <button id="generate-btn" class="btn btn-primary btn-sm export-main-btn" data-i18n="gen_27">
+                        Generar y Descargar ZIP (27 Skins)
+                    </button>
+                    <button id="reset-app-btn" class="btn btn-destructive btn-sm" data-i18n="clear_all">
+                        Limpiar
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-left">
+                <span data-i18n="footer_made">Creado por</span>
+                <a href="https://namemc.com/profile/Sonrojado" target="_blank" rel="noopener" class="footer-link-strong">ArmandoLZ (Sonrojado)</a>
+                <span class="footer-sep">·</span>
+                <span class="footer-muted">Flip logic by <a href="https://github.com/babutxa" target="_blank" rel="noopener">babutxa</a></span>
+            </div>
+            <div class="footer-right">
+                <a href="script/index.html" class="footer-link" data-i18n="nav_scripts">Scripts AutoNameMC</a>
+                <span class="footer-sep">·</span>
+                <a href="https://github.com/srbrop/SkinsArts-Studio" target="_blank" rel="noopener" class="footer-link">GitHub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/bundles/skinview3d.bundle.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoNameMC & Capture Scripts — SkinsArts Studio</title>
+    <meta name="description" content="Generador de scripts Node.js personalizados para subir 27 skins a Minecraft.net, actualizar NameMC y capturar tu perfil en alta resolución.">
+    <meta name="author" content="ArmandoLZ (Sonrojado)">
+    <link rel="icon" type="image/png" href="../logo1.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="topbar-left">
+                <a href="../index.html" class="topbar-brand">
+                    <img src="../logo2.png" alt="SkinsArts" class="brand-logo" onerror="this.style.display='none'">
+                    <span class="brand-title">SkinsArts Studio</span>
+                </a>
+                <nav class="topbar-nav">
+                    <a href="../index.html" class="nav-link" data-i18n="nav_generator">Generador</a>
+                    <a href="index.html" class="nav-link active" data-i18n="nav_scripts">Scripts AutoNameMC</a>
+                </nav>
+            </div>
+
+            <div class="topbar-actions">
+                <a href="https://github.com/srbrop/SkinsArts-Studio" target="_blank" rel="noopener" class="btn btn-ghost btn-icon" title="GitHub">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                </a>
+                <button id="btn-theme-script" class="btn btn-ghost btn-icon" title="Cambiar Tema">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"/></svg>
+                </button>
+                <button id="btn-lang-script" class="btn btn-secondary btn-xs">
+                    <span id="script-lang-indicator">ES / EN</span>
+                </button>
+                <a href="../index.html" class="btn btn-primary btn-xs">
+                    <span data-i18n="back_generator">← Generador de Skins</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="scripts-workspace">
+            <section class="card col-panel">
+                <div class="card-header-row">
+                    <div>
+                        <h1 class="card-title" data-i18n="gen_heading">Generador de Scripts Node.js</h1>
+                        <p class="helper-text" data-i18n="gen_sub">Genera tu script Node.js personalizado (Automático, Guiado con la tecla Z o Captura HD).</p>
+                    </div>
+                </div>
+
+                <div class="script-inputs-grid">
+                    <div class="script-field-group">
+                        <label for="nick-input" class="field-label" data-i18n="ask_nick">Tu Nick de Minecraft / NameMC</label>
+                        <input type="text" id="nick-input" class="input-pill" value="" placeholder="Escribe aquí tu propio nick">
+                    </div>
+                    <div class="script-field-group">
+                        <label for="filename-input" class="field-label" data-i18n="ask_filename">Nombre para tu script (como quieras llamarlo)</label>
+                        <input type="text" id="filename-input" class="input-pill" value="AutoNameMC-Guiado.js" placeholder="Ejemplo: mi-script.js">
+                    </div>
+                </div>
+
+                <div class="script-tabs">
+                    <button type="button" class="script-tab-card active" data-script="guided">
+                        <span class="tab-file" data-i18n="tab_guided_title">Guiado con la tecla Z</span>
+                        <span class="tab-desc" data-i18n="tab_guided_desc">Elige desde qué skin iniciar (c(9), b(3), a(5)), 10 ciclos F5 y salto con tecla Z.</span>
+                    </button>
+                    <button type="button" class="script-tab-card" data-script="auto">
+                        <span class="tab-file" data-i18n="tab_auto_title">Automático (27 Skins)</span>
+                        <span class="tab-desc" data-i18n="tab_auto_desc">Sube de c(9) hasta a(1) automáticamente con 4 ciclos F5.</span>
+                    </button>
+                    <button type="button" class="script-tab-card" data-script="capture">
+                        <span class="tab-file" data-i18n="tab_capture_title">Captura de Perfil HD</span>
+                        <span class="tab-desc" data-i18n="tab_capture_desc">Captura universal (Brave, Chrome, Edge) a 1516×2460 con auto-ajuste a 100% zoom.</span>
+                    </button>
+                </div>
+
+                <div id="combine-bar" class="card-header-row" style="background: var(--color-surface-alt); padding: 7px 12px; border-radius: var(--radius-nested);">
+                    <div style="min-width: 0;">
+                        <strong id="mode-summary-title" style="font-size: 11.5px; color: var(--color-ink); display: block;"></strong>
+                        <p id="mode-summary-text" class="helper-text" style="font-size: 11px;"></p>
+                    </div>
+                    <button type="button" id="btn-combine-capture" class="btn btn-outline btn-xs" style="flex-shrink: 0;">
+                        <span id="combine-btn-text">+ Unir con Captura HD</span>
+                    </button>
+                </div>
+
+                <div class="code-preview-wrapper">
+                    <div class="code-preview-header">
+                        <span id="code-filename-label" class="code-filename">AutoNameMC-Guiado.js</span>
+                        <div class="btn-group">
+                            <button id="btn-copy-code" class="btn btn-secondary btn-xs" data-i18n="copy_code">Copiar Código</button>
+                            <button id="btn-download-code" class="btn btn-primary btn-xs" data-i18n="download_code">Descargar .js</button>
+                        </div>
+                    </div>
+                    <pre id="generated-code-pre" class="code-pre"></pre>
+                </div>
+            </section>
+
+            <section class="card col-panel">
+                <div class="card-header-row">
+                    <h2 class="card-title" data-i18n="guide_heading">Instrucciones de Uso</h2>
+                    <span class="badge-pill badge-soft">Brave · Chrome · Edge</span>
+                </div>
+
+                <div class="alert-warning-box">
+                    <strong data-i18n="warn_title">Requisitos Clave:</strong>
+                    <span data-i18n="warn_desc">Guarda tu carpeta fuera de OneDrive/Drive (ej. en <code>C:\</code>) y desactiva extensiones de NameMC (NameMC Unlock/Extras) para la captura HD.</span>
+                </div>
+
+                <div class="tutorial-steps">
+                    <div class="step-block">
+                        <div class="step-header">
+                            <span class="step-num">1</span>
+                            <span class="step-title" data-i18n="step1_title">Extraer las 27 skins y guardar tu script</span>
+                        </div>
+                        <p class="helper-text" data-i18n="step1_desc">
+                            Descarga tu <code>.zip</code> en el <a href="../index.html" style="color: var(--color-ink); text-decoration: underline;">Generador de Skins</a>, extrae las 27 imágenes en tu carpeta local y guarda ahí mismo el archivo <code id="step1-file-ref">AutoNameMC-Guiado.js</code> descargado desde la izquierda.
+                        </p>
+                    </div>
+
+                    <div class="step-block">
+                        <div class="step-header">
+                            <span class="step-num">2</span>
+                            <span class="step-title" data-i18n="step2_title">Instalar Node.js y Puppeteer en CMD</span>
+                        </div>
+                        <p class="helper-text" data-i18n="step2_desc">
+                            Instala <a href="https://nodejs.org/" target="_blank" rel="noopener" style="color: var(--color-ink); text-decoration: underline;">Node.js LTS</a>. En tu carpeta, haz clic en la barra de direcciones superior, escribe <code>cmd</code> y presiona Enter. Ejecuta:
+                        </p>
+                        <div class="cmd-snip">
+                            <code>npm init -y && npm install puppeteer</code>
+                            <button type="button" class="btn btn-secondary btn-xs copy-snip-btn" data-copy="npm init -y && npm install puppeteer" data-i18n="copy_btn">Copiar</button>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <div class="step-header">
+                            <span class="step-num">3</span>
+                            <span class="step-title" data-i18n="step3_title">Abrir Navegador en Modo Debug (Windows + R)</span>
+                        </div>
+                        <p class="helper-text" data-i18n="step3_desc">
+                            Cierra todas las ventanas de tu navegador, presiona <strong>Windows + R</strong> y pega el comando del navegador que uses:
+                        </p>
+                        <div class="browser-grid-btns">
+                            <button type="button" class="btn btn-secondary btn-xs copy-snip-btn" data-copy='"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" --remote-debugging-port=9222'>Copiar Brave</button>
+                            <button type="button" class="btn btn-secondary btn-xs copy-snip-btn" data-copy='"C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222'>Copiar Chrome</button>
+                            <button type="button" class="btn btn-secondary btn-xs copy-snip-btn" data-copy='"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --remote-debugging-port=9222'>Copiar Edge</button>
+                        </div>
+                        <p class="helper-text" data-i18n="step3_tabs">
+                            • <strong>Pestaña 1:</strong> Abre <a href="https://www.minecraft.net/msaprofile/mygames/editskin" target="_blank" rel="noopener" style="color: var(--color-ink); text-decoration: underline;">Minecraft.net (Cambiar aspecto)</a>. <strong>Importante:</strong> Selecciona manualmente ahí el tamaño de brazos de tu skin (<strong>Clásico o Delgada</strong>), ya que el script no cambia esa opción por ti.<br>
+                            • <strong>Pestaña 2:</strong> Abre <strong>tu propio perfil</strong> en NameMC (<code id="namemc-dynamic-link">es.namemc.com/profile/TU_USUARIO</code>).
+                        </p>
+                    </div>
+
+                    <div class="step-block">
+                        <div class="step-header">
+                            <span class="step-num">4</span>
+                            <span class="step-title" data-i18n="step4_title">Ejecutar el Script en CMD</span>
+                        </div>
+                        <p class="helper-text" data-i18n="step4_desc">
+                            Regresa a la consola CMD de tu carpeta y ejecuta el comando de inicio (el capturador ajusta automáticamente el zoom al 100% sin importar si tu pestaña estaba en 80% o 90%):
+                        </p>
+                        <div class="cmd-snip">
+                            <code id="run-cmd-display">node AutoNameMC-Guiado.js</code>
+                            <button type="button" id="copy-run-cmd-btn" class="btn btn-primary btn-xs" data-i18n="copy_btn">Copiar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-left">
+                <span data-i18n="footer_made">Creado por</span>
+                <a href="https://namemc.com/profile/Sonrojado" target="_blank" rel="noopener" class="footer-link-strong">ArmandoLZ (Sonrojado)</a>
+            </div>
+            <div class="footer-right">
+                <a href="../index.html" class="footer-link" data-i18n="back_generator">← Generador de Skins</a>
+                <span class="footer-sep">·</span>
+                <a href="https://github.com/srbrop/SkinsArts-Studio" target="_blank" rel="noopener" class="footer-link">GitHub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const i18nScript = {
+            es: {
+                nav_generator: "Generador",
+                nav_scripts: "Scripts AutoNameMC",
+                back_generator: "← Generador de Skins",
+                gen_heading: "Generador de Scripts Node.js",
+                gen_sub: "Genera tu script Node.js personalizado (Automático, Guiado con la tecla Z o Captura HD).",
+                ask_nick: "Tu Nick de Minecraft / NameMC",
+                ask_filename: "Nombre para tu script (como quieras llamarlo)",
+                tab_guided_title: "Guiado con la tecla Z",
+                tab_guided_desc: "Elige desde qué skin iniciar (c(9), b(3), a(5)), 10 ciclos F5 y salto con tecla Z.",
+                tab_auto_title: "Automático (27 Skins)",
+                tab_auto_desc: "Sube de c(9) hasta a(1) automáticamente con 4 ciclos F5.",
+                tab_capture_title: "Captura de Perfil HD",
+                tab_capture_desc: "Captura universal (Brave, Chrome, Edge) a 1516×2460 con auto-ajuste a 100% zoom.",
+                combine_off: "+ Unir con Captura HD",
+                combine_on: "✓ Unido con Captura HD (1 solo script)",
+                copy_code: "Copiar Código",
+                copied: "¡Copiado!",
+                download_code: "Descargar .js",
+                guide_heading: "Instrucciones de Uso",
+                warn_title: "Requisitos Clave:",
+                warn_desc: "Guarda tu carpeta fuera de OneDrive/Drive (ej. en C:\\) y desactiva extensiones de NameMC (NameMC Unlock/Extras) para la captura HD.",
+                step1_title: "Extraer las 27 skins y guardar tu script",
+                step2_title: "Instalar Node.js y Puppeteer en CMD",
+                step2_desc: 'Instala <a href="https://nodejs.org/" target="_blank" rel="noopener" style="color: var(--color-ink); text-decoration: underline;">Node.js LTS</a>. En tu carpeta, haz clic en la barra de direcciones superior, escribe <code>cmd</code> y presiona Enter. Ejecuta:',
+                step3_title: "Abrir Navegador en Modo Debug (Windows + R)",
+                step3_desc: "Cierra tus navegadores, presiona <strong>Windows + R</strong> y pega el comando del navegador que uses:",
+                step3_tabs: '• <strong>Pestaña 1:</strong> Abre <a href="https://www.minecraft.net/msaprofile/mygames/editskin" target="_blank" rel="noopener" style="color: var(--color-ink); text-decoration: underline;">Minecraft.net (Cambiar aspecto)</a>. <strong>Importante:</strong> Selecciona ahí tu tamaño de brazos (<strong>Clásico o Delgada</strong>). Si usas skins intercaladas o por filas, procura que las 3 compartan el mismo modelo.<br>• <strong>Pestaña 2:</strong> Abre <strong>tu propio perfil</strong> en NameMC (<code id="namemc-dynamic-link">es.namemc.com/profile/TU_USUARIO</code>).',
+                step4_title: "Ejecutar el Script en CMD",
+                step4_desc: "Regresa a la consola CMD de tu carpeta y ejecuta el comando de inicio (el capturador ajusta automáticamente el zoom al 100% sin importar si tu pestaña estaba en 80% o 90%):",
+                copy_btn: "Copiar",
+                footer_made: "Creado por",
+                modes: {
+                    guided: {
+                        defaultName: "AutoNameMC-Guiado.js",
+                        combinedName: "AutoNameMC-Guiado-Captura.js",
+                        title: "Modo Guiado con la tecla Z (10 ciclos F5)",
+                        titleCombined: "Modo Guiado con la tecla Z + Captura HD al finalizar",
+                        desc: "Elige desde qué skin iniciar (c(9), b(3), a(5)) y presiona Z cuando actualice en NameMC.",
+                        descCombined: "Sube tus skins guiado con la tecla Z y, al terminar el lote, toma automáticamente la captura 4x HD de tu perfil."
+                    },
+                    auto: {
+                        defaultName: "AutoNameMC.js",
+                        combinedName: "AutoNameMC-Captura.js",
+                        title: "Modo Automático Completo (4 ciclos F5)",
+                        titleCombined: "Modo Automático Completo + Captura HD al finalizar",
+                        desc: "Sube automáticamente las 27 skins de c(9).png a a(1).png con 4 ciclos F5 por skin.",
+                        descCombined: "Sube las 27 skins de forma automática y al finalizar toma la captura 4x HD de tu nuevo mural en el navegador."
+                    },
+                    capture: {
+                        defaultName: "NameMC-Capture.js",
+                        combinedName: "NameMC-Capture.js",
+                        title: "Captura de Perfil NameMC Universal (Brave, Chrome, Edge)",
+                        titleCombined: "Captura de Perfil NameMC Universal (Brave, Chrome, Edge)",
+                        desc: "Conecta a tu pestaña abierta de NameMC en cualquier navegador Chromium, corrige el zoom automáticamente al 100% y guarda tu perfil en 1516×2460.",
+                        descCombined: ""
+                    }
+                }
+            },
+            en: {
+                nav_generator: "Generator",
+                nav_scripts: "AutoNameMC Scripts",
+                back_generator: "← Skin Generator",
+                gen_heading: "Node.js Script Generator",
+                gen_sub: "Generate your custom Node.js script (Automatic, Guided with the Z key, or HD Capture).",
+                ask_nick: "Your Minecraft / NameMC Nickname",
+                ask_filename: "Script filename (name it whatever you want)",
+                tab_guided_title: "Guided with the Z key",
+                tab_guided_desc: "Choose starting skin (c(9), b(3), a(5)), 10 F5 cycles, and skip with the Z key.",
+                tab_auto_title: "Automatic (27 Skins)",
+                tab_auto_desc: "Uploads from c(9) down to a(1) automatically with 4x F5 cycles.",
+                tab_capture_title: "HD Profile Capture",
+                tab_capture_desc: "Universal capture (Brave, Chrome, Edge) at 1516×2460 with auto 100% zoom lock.",
+                combine_off: "+ Merge with HD Capture",
+                combine_on: "✓ Merged with HD Capture (Single Script)",
+                copy_code: "Copy Code",
+                copied: "Copied!",
+                download_code: "Download .js",
+                guide_heading: "Step-by-Step Instructions",
+                warn_title: "Key Requirements:",
+                warn_desc: "Keep folder outside OneDrive/Drive (e.g. C:\\) and disable NameMC extensions (NameMC Unlock/Extras) for HD capture.",
+                step1_title: "Extract the 27 skins & save your script",
+                step2_title: "Install Node.js & Puppeteer in CMD",
+                step2_desc: 'Install <a href="https://nodejs.org/" target="_blank" rel="noopener" style="color: var(--color-ink); text-decoration: underline;">Node.js LTS</a>. In your folder, click the address bar, type <code>cmd</code>, and press Enter. Run:',
+                step3_title: "Open Browser in Debug Mode (Windows + R)",
+                step3_desc: "Close all browsers, press <strong>Windows + R</strong>, and paste the command for your browser:",
+                step3_tabs: '• <strong>Tab 1:</strong> Open <a href="https://www.minecraft.net/msaprofile/mygames/editskin" target="_blank" rel="noopener" style="color: var(--color-ink); text-decoration: underline;">Minecraft.net (Change skin)</a>. <strong>Important:</strong> Manually choose your arm size there (<strong>Classic or Slim</strong>). If using alternating/row skins, make sure all 3 share the same model.<br>• <strong>Tab 2:</strong> Open <strong>your own profile</strong> on NameMC (<code id="namemc-dynamic-link">es.namemc.com/profile/YOUR_USERNAME</code>).',
+                step4_title: "Run the Script in CMD",
+                step4_desc: "Return to the CMD window in your folder and run your file (the capture logic automatically normalizes browser zoom to 100% even if your tab was at 80% or 90%):",
+                copy_btn: "Copy",
+                footer_made: "Created by",
+                modes: {
+                    guided: {
+                        defaultName: "AutoNameMC-Guided.js",
+                        combinedName: "AutoNameMC-Guided-Capture.js",
+                        title: "Guided Mode with the Z key (10 F5 cycles)",
+                        titleCombined: "Guided Mode with the Z key + HD Capture at the end",
+                        desc: "Choose which skin to start from (c(9), b(3), a(5)) and press Z as soon as NameMC updates.",
+                        descCombined: "Uploads your skins guided with the Z key and automatically captures a 4x HD screenshot of your profile when finished."
+                    },
+                    auto: {
+                        defaultName: "AutoNameMC.js",
+                        combinedName: "AutoNameMC-Capture.js",
+                        title: "Full Automatic Mode (4 F5 cycles)",
+                        titleCombined: "Full Automatic Mode + HD Capture at the end",
+                        desc: "Automatically uploads all 27 skins from c(9).png down to a(1).png with 4 F5 cycles per skin.",
+                        descCombined: "Uploads all 27 skins automatically and captures a 4x HD screenshot of your new mural when finished."
+                    },
+                    capture: {
+                        defaultName: "NameMC-Capture.js",
+                        combinedName: "NameMC-Capture.js",
+                        title: "Universal NameMC Profile Capture (Brave, Chrome, Edge)",
+                        titleCombined: "Universal NameMC Profile Capture (Brave, Chrome, Edge)",
+                        desc: "Connects to your open NameMC tab in any Chromium browser, automatically locks zoom to 100%, and saves your profile at 1516×2460.",
+                        descCombined: ""
+                    }
+                }
+            }
+        };
+
+        let currentLang = localStorage.getItem('skinsarts_lang') || 'es';
+        let currentTheme = localStorage.getItem('skinsarts_theme') || 'dark';
+        let activeScriptType = 'guided';
+        let combineWithCapture = false;
+        let userEditedFilename = false;
+
+        const nickInput = document.getElementById('nick-input');
+        const filenameInput = document.getElementById('filename-input');
+        const codePre = document.getElementById('generated-code-pre');
+        const codeFilenameLabel = document.getElementById('code-filename-label');
+        const modeSummaryTitle = document.getElementById('mode-summary-title');
+        const modeSummaryText = document.getElementById('mode-summary-text');
+        const btnCombineCapture = document.getElementById('btn-combine-capture');
+        const combineBtnText = document.getElementById('combine-btn-text');
+        const runCmdDisplay = document.getElementById('run-cmd-display');
+        const step1FileRef = document.getElementById('step1-file-ref');
+
+        function applyScriptTheme() {
+            const isLight = currentTheme === 'light';
+            document.body.classList.toggle('theme-light', isLight);
+            const logoImg = document.querySelector('.brand-logo');
+            if (logoImg) {
+                logoImg.src = isLight ? '../logo1.png' : '../logo2.png';
+            }
+        }
+
+        document.getElementById('btn-theme-script')?.addEventListener('click', () => {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('skinsarts_theme', currentTheme);
+            applyScriptTheme();
+        });
+
+        function normalizeJsFilename(rawName, fallback) {
+            const clean = (rawName || '').trim().replace(/[<>:"/\\|?*]/g, '');
+            if (!clean) return fallback;
+            return clean.toLowerCase().endsWith('.js') ? clean : `${clean}.js`;
+        }
+
+        function getCaptureSnippet(indent = '        ') {
+            return `${indent}console.log('\\n[CAPTURA HD] Preparando captura de perfil en alta resolucion...');
+${indent}await tabNameMC.bringToFront();
+
+${indent}if (!tabNameMC.url().toLowerCase().includes(\`/profile/\${username.toLowerCase()}\`)) {
+${indent}    await tabNameMC.goto(\`https://es.namemc.com/profile/\${username}\`, { waitUntil: 'networkidle2', timeout: 60000 });
+${indent}} else {
+${indent}    await tabNameMC.reload({ waitUntil: 'networkidle2', timeout: 60000 });
+${indent}}
+
+${indent}const client = await tabNameMC.target().createCDPSession();
+${indent}await client.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
+${indent}await tabNameMC.setViewport({ width: 1920, height: 3000, deviceScaleFactor: 4 });
+
+${indent}const zoomFactor = await tabNameMC.evaluate(() => 1920 / window.innerWidth);
+${indent}if (Math.abs(zoomFactor - 1) > 0.005) {
+${indent}    await tabNameMC.setViewport({
+${indent}        width: Math.round(1920 * zoomFactor),
+${indent}        height: Math.round(3000 * zoomFactor),
+${indent}        deviceScaleFactor: 4 / zoomFactor
+${indent}    });
+${indent}}
+
+${indent}await tabNameMC.addStyleTag({
+${indent}    content: \`
+${indent}        html, body {
+${indent}            min-width: 1200px !important;
+${indent}            zoom: 100% !important;
+${indent}            scroll-behavior: auto !important;
+${indent}        }
+${indent}        .container, .container-lg, .container-xl {
+${indent}            width: 1140px !important;
+${indent}            max-width: 1140px !important;
+${indent}        }
+${indent}        .col-md-4, .col-lg-4, .card {
+${indent}            min-width: 379px !important;
+${indent}        }
+${indent}        .card canvas.skin-2d, .skin-2d {
+${indent}            image-rendering: pixelated !important;
+${indent}        }
+${indent}        ins.adsbygoogle, [id^="google_ads"], [class*="ad-"], iframe:not([src*="namemc"]), .namemc-extras, [class*="namemc-unlock"], [id*="namemc-extras"], [id*="namemc-unlock"] {
+${indent}            display: none !important;
+${indent}        }
+${indent}    \`
+${indent}});
+
+${indent}await tabNameMC.evaluate(() => {
+${indent}    document.documentElement.style.zoom = '100%';
+${indent}    document.body.style.zoom = '100%';
+${indent}    window.scrollTo(0, 0);
+${indent}    window.dispatchEvent(new Event('resize'));
+${indent}});
+
+${indent}await tabNameMC.waitForSelector('h1', { timeout: 30000 });
+${indent}await tabNameMC.waitForSelector('canvas', { timeout: 30000 });
+${indent}await new Promise(r => setTimeout(r, 2500));
+
+${indent}const rawRegion = await tabNameMC.evaluate(() => {
+${indent}    window.scrollTo(0, 0);
+${indent}    const nameEl = document.querySelector('h1');
+${indent}    const cards = Array.from(document.querySelectorAll('.card'));
+${indent}    const skinCard = cards.find(c => c.querySelector('canvas'));
+${indent}    const mosaicCard = cards.find(c =>
+${indent}        c.querySelectorAll('a[href*="/skin/"]').length > 0 ||
+${indent}        c.innerText.includes('Aspectos') ||
+${indent}        c.innerText.includes('Skins')
+${indent}    );
+
+${indent}    if (!nameEl || !skinCard || !mosaicCard) return null;
+
+${indent}    const nRect = nameEl.getBoundingClientRect();
+${indent}    const sRect = skinCard.getBoundingClientRect();
+${indent}    const mRect = mosaicCard.getBoundingClientRect();
+
+${indent}    const left = Math.min(nRect.left, sRect.left, mRect.left) + window.scrollX;
+${indent}    const right = Math.max(nRect.right, sRect.right, mRect.right) + window.scrollX;
+${indent}    const top = nRect.top + window.scrollY;
+${indent}    const bottom = mRect.bottom + window.scrollY;
+
+${indent}    return {
+${indent}        x: Math.max(0, left),
+${indent}        y: Math.max(0, top),
+${indent}        width: right - left,
+${indent}        height: bottom - top
+${indent}    };
+${indent}});
+
+${indent}if (rawRegion) {
+${indent}    const clipRegion = {
+${indent}        x: Math.floor(rawRegion.x * zoomFactor),
+${indent}        y: Math.floor(rawRegion.y * zoomFactor),
+${indent}        width: Math.ceil(rawRegion.width * zoomFactor),
+${indent}        height: Math.ceil(rawRegion.height * zoomFactor)
+${indent}    };
+
+${indent}    let numeroMural = 1;
+${indent}    while (fs.existsSync(path.join(__dirname, \`\${username}_mural_\${numeroMural}.png\`))) {
+${indent}        numeroMural++;
+${indent}    }
+
+${indent}    const savePath = path.join(__dirname, \`\${username}_mural_\${numeroMural}.png\`);
+${indent}    await tabNameMC.screenshot({
+${indent}        path: savePath,
+${indent}        clip: clipRegion,
+${indent}        captureBeyondViewport: true
+${indent}    });
+${indent}    console.log(\`\\nCaptura guardada con exito: \${username}_mural_\${numeroMural}.png\`);
+${indent}} else {
+${indent}    console.log('\\nError: No se pudo calcular el area del perfil.');
+${indent}}
+
+${indent}try {
+${indent}    await client.send('Emulation.clearDeviceMetricsOverride');
+${indent}} catch (e) {}`;
+        }
+
+        function buildScriptCode(type, rawNick, includeCapture) {
+            const safeNick = (rawNick || 'TU_USUARIO').trim().replace(/['"\\]/g, '') || 'TU_USUARIO';
+
+            if (type === 'capture') {
+                return `const puppeteer = require('puppeteer');
+const path = require('path');
+const fs = require('fs');
+
+(async () => {
+    const username = '${safeNick}';
+
+    console.log('[CAPTURA HD] Conectando al navegador (Brave, Chrome o Edge)...');
+
+    try {
+        const browser = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9222' });
+        const pages = await browser.pages();
+        let tabNameMC = pages.find(p => p.url().includes('namemc.com'));
+
+        if (!tabNameMC) {
+            throw new Error('Abre primero la pestana de tu perfil de NameMC en el navegador.');
+        }
+
+${getCaptureSnippet('        ')}
+
+        browser.disconnect();
+    } catch (error) {
+        console.error('\\nError al tomar la captura:', error);
+    }
+})();`;
+            }
+
+            if (type === 'auto') {
+                const fsRequire = includeCapture ? "\nconst fs = require('fs');" : "";
+                const captureBlock = includeCapture ? `\n${getCaptureSnippet('        ')}\n` : "";
+                return `const puppeteer = require('puppeteer');
+const path = require('path');${fsRequire}
+
+(async () => {
+    const username = '${safeNick}';
+
+    const urlNameMC = \`https://es.namemc.com/profile/\${username}\`;
+    const letras = ['c', 'b', 'a'];
+    const skins = [];
+
+    for (let letra of letras) {
+        for (let i = 9; i >= 1; i--) {
+            skins.push(\`\${letra}(\${i}).png\`);
+        }
+    }
+
+    console.log(\`Lista generada: \${skins.length} skins para subir.\`);
+
+    try {
+        console.log('Conectando a tu navegador para la subida...');
+        const browser = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9222' });
+        const pages = await browser.pages();
+
+        let tabMinecraft = pages.find(p => p.url().includes('minecraft.net'));
+        let tabNameMC = pages.find(p => p.url().includes('namemc.com'));
+
+        if (!tabMinecraft || !tabNameMC) {
+            throw new Error('No se encontraron las pestanas requeridas. Asegurate de tener minecraft.net y namemc.com abiertas.');
+        }
+
+        if (!tabNameMC.url().toLowerCase().includes(username.toLowerCase())) {
+            await tabNameMC.goto(urlNameMC, { waitUntil: 'domcontentloaded', timeout: 60000 });
+        }
+
+        console.log('Pestanas detectadas. Iniciando subida automatica...\\n');
+
+        for (let skin of skins) {
+            const skinPath = path.join(__dirname, skin);
+            let subidaExitosa = false;
+            let intentos = 1;
+
+            while (!subidaExitosa) {
+                console.log(\`[Intento #\${intentos}] Procesando: \${skin}...\`);
+
+                try {
+                    await tabMinecraft.bringToFront();
+
+                    if (!tabMinecraft.url().includes('editskin')) {
+                        console.log('[ALERTA] Redireccion detectada. Pausando 30s...');
+                        await new Promise(r => setTimeout(r, 30000));
+                        await tabMinecraft.goto('https://www.minecraft.net/msaprofile/mygames/editskin', { waitUntil: 'networkidle2', timeout: 60000 });
+                        continue;
+                    }
+
+                    const btnSelectorFile = '#choose-file';
+                    await tabMinecraft.waitForSelector(btnSelectorFile, { visible: true, timeout: 15000 });
+
+                    const [fileChooser] = await Promise.all([
+                        tabMinecraft.waitForFileChooser({ timeout: 15000 }),
+                        tabMinecraft.click(btnSelectorFile)
+                    ]);
+                    await fileChooser.accept([skinPath]);
+
+                    await new Promise(r => setTimeout(r, 2500));
+
+                    const promesaRed = tabMinecraft.waitForResponse(
+                        res => res.url().includes('/profile/skins') && res.request().method() !== 'OPTIONS',
+                        { timeout: 12000 }
+                    ).catch(() => null);
+
+                    console.log('   Enviando peticion a Mojang...');
+                    const btnCargar = 'button[data-aem-contentname="Upload Skin"]';
+                    await tabMinecraft.waitForSelector(btnCargar, { visible: true, timeout: 15000 });
+                    await tabMinecraft.click(btnCargar);
+
+                    const respuestaAPI = await promesaRed;
+
+                    if (respuestaAPI && respuestaAPI.ok()) {
+                        console.log('   [CONFIRMADO] El servidor acepto la skin correctamente.');
+                        subidaExitosa = true;
+                    } else {
+                        if (!respuestaAPI) {
+                            console.log('   [FALLO] Peticion perdida o pagina congelada.');
+                        } else {
+                            const statusCode = respuestaAPI.status();
+                            let detallesError = 'No detallado.';
+                            try { detallesError = await respuestaAPI.text(); } catch (e) {}
+                            console.log(\`   [RECHAZADO] Codigo: \${statusCode} | Motivo: \${detallesError}\`);
+                        }
+
+                        console.log('   [ESPERA] Esperando 15s para reintentar...');
+                        await tabMinecraft.reload({ waitUntil: 'networkidle2', timeout: 60000 });
+                        await new Promise(r => setTimeout(r, 15000));
+                        intentos++;
+                    }
+                } catch (innerError) {
+                    console.log(\`   [ERROR DE NAVEGADOR] \${innerError.message}\`);
+                    console.log('   [RECUPERACION] Forzando recarga (15s)...');
+                    try { await tabMinecraft.reload({ waitUntil: 'networkidle2', timeout: 60000 }); } catch (e) {}
+                    await new Promise(r => setTimeout(r, 15000));
+                    intentos++;
+                }
+            }
+
+            try {
+                console.log('Pasando a NameMC para actualizar el historial...');
+                await tabNameMC.bringToFront();
+
+                for (let ciclo = 1; ciclo <= 4; ciclo++) {
+                    console.log(\`   Ejecutando F5 #\${ciclo} de 4...\`);
+                    await tabNameMC.reload({ waitUntil: 'networkidle2', timeout: 60000 });
+
+                    if (ciclo < 4) {
+                        console.log('   Esperando 8s...');
+                        await new Promise(r => setTimeout(r, 8000));
+                    }
+                }
+
+                console.log('Historial actualizado tras 4 ciclos.');
+            } catch (nameMcError) {
+                console.log('   [AVISO] Retraso al recargar NameMC.');
+            }
+
+            console.log('Esperando 7s de seguridad finales...\\n');
+            await new Promise(r => setTimeout(r, 7000));
+        }
+${captureBlock}
+        browser.disconnect();
+        console.log('\\nPROCESO COMPLETADO. Las 27 skins fueron subidas.');
+    } catch (error) {
+        console.error('\\nError en la ejecucion:', error);
+    }
+})();`;
+            }
+
+            const fsRequire = includeCapture ? "\nconst fs = require('fs');" : "";
+            const captureBlock = includeCapture ? `\n${getCaptureSnippet('            ')}\n` : "";
+            return `const puppeteer = require('puppeteer');
+const path = require('path');${fsRequire}
+const readline = require('readline');
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+(async () => {
+    const username = '${safeNick}';
+
+    const urlNameMC = \`https://es.namemc.com/profile/\${username}\`;
+    const letras = ['c', 'b', 'a'];
+    const skinsCompletas = [];
+
+    for (let letra of letras) {
+        for (let i = 9; i >= 1; i--) {
+            skinsCompletas.push(\`\${letra}(\${i}).png\`);
+        }
+    }
+
+    console.log('\\n===============================================');
+    console.log("MODO GUIADO CON LA TECLA 'Z'");
+    console.log('===============================================');
+
+    rl.question('En que skin quieres iniciar o retomar? (Ejemplo: c(9), b(3), a(5)): ', async (respuesta) => {
+        const inputUsuario = (respuesta.trim() || 'c(9)').toLowerCase();
+        const skinBuscada = inputUsuario.endsWith('.png') ? inputUsuario : \`\${inputUsuario}.png\`;
+        const indice = skinsCompletas.indexOf(skinBuscada);
+
+        if (indice === -1) {
+            console.log(\`\\nError: No se encontro "\${skinBuscada}" en la lista de 27 skins.\`);
+            process.exit(1);
+        }
+
+        const skinsFaltantes = skinsCompletas.slice(indice);
+        rl.close();
+
+        let saltarManual = false;
+        let dispararFreno = null;
+
+        if (process.stdin.isTTY) {
+            process.stdin.setRawMode(true);
+        }
+        process.stdin.resume();
+        process.stdin.setEncoding('utf8');
+
+        process.stdin.on('data', (key) => {
+            if (key.toLowerCase() === 'z') {
+                saltarManual = true;
+                if (dispararFreno) dispararFreno();
+            }
+            if (key === '\\u0003') {
+                console.log('\\nDeteniendo el script manualmente...');
+                process.exit();
+            }
+        });
+
+        console.log(\`\\nIniciando desde: \${skinsFaltantes[0]}\`);
+        console.log(\`Skins restantes en este lote: \${skinsFaltantes.length}\\n\`);
+
+        try {
+            console.log('Conectando a tu navegador...');
+            const browser = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9222' });
+            const pages = await browser.pages();
+
+            let tabMinecraft = pages.find(p => p.url().includes('minecraft.net'));
+            let tabNameMC = pages.find(p => p.url().includes('namemc.com'));
+
+            if (!tabMinecraft || !tabNameMC) {
+                throw new Error('No se encontraron las pestanas requeridas. Asegurate de tener minecraft.net y namemc.com abiertas.');
+            }
+
+            if (!tabNameMC.url().toLowerCase().includes(username.toLowerCase())) {
+                await tabNameMC.goto(urlNameMC, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            }
+
+            console.log('Pestanas detectadas. Iniciando subida...\\n');
+
+            for (let skin of skinsFaltantes) {
+                const skinPath = path.join(__dirname, skin);
+                let subidaExitosa = false;
+                let intentos = 1;
+
+                while (!subidaExitosa) {
+                    console.log(\`[Intento #\${intentos}] Procesando: \${skin}...\`);
+
+                    try {
+                        await tabMinecraft.bringToFront();
+
+                        if (!tabMinecraft.url().includes('editskin')) {
+                            console.log('[ALERTA] Redireccion detectada. Pausando 30s...');
+                            await new Promise(r => setTimeout(r, 30000));
+                            await tabMinecraft.goto('https://www.minecraft.net/msaprofile/mygames/editskin', { waitUntil: 'domcontentloaded', timeout: 60000 });
+                            continue;
+                        }
+
+                        const btnSelectorFile = '#choose-file';
+                        await tabMinecraft.waitForSelector(btnSelectorFile, { visible: true, timeout: 15000 });
+
+                        const [fileChooser] = await Promise.all([
+                            tabMinecraft.waitForFileChooser({ timeout: 15000 }),
+                            tabMinecraft.click(btnSelectorFile)
+                        ]);
+                        await fileChooser.accept([skinPath]);
+
+                        await new Promise(r => setTimeout(r, 2500));
+
+                        const promesaRed = tabMinecraft.waitForResponse(
+                            res => res.url().includes('/profile/skins') && res.request().method() !== 'OPTIONS',
+                            { timeout: 12000 }
+                        ).catch(() => null);
+
+                        console.log('   Enviando peticion a Mojang...');
+                        const btnCargar = 'button[data-aem-contentname="Upload Skin"]';
+                        await tabMinecraft.waitForSelector(btnCargar, { visible: true, timeout: 15000 });
+                        await tabMinecraft.click(btnCargar);
+
+                        const respuestaAPI = await promesaRed;
+
+                        if (respuestaAPI && respuestaAPI.ok()) {
+                            console.log('   [CONFIRMADO] El servidor acepto la skin correctamente.');
+                            subidaExitosa = true;
+                        } else {
+                            if (!respuestaAPI) {
+                                console.log('   [FALLO] Peticion perdida o pagina congelada.');
+                            } else {
+                                const statusCode = respuestaAPI.status();
+                                let detallesError = 'No detallado.';
+                                try { detallesError = await respuestaAPI.text(); } catch (e) {}
+                                console.log(\`   [RECHAZADO] Codigo: \${statusCode} | Motivo: \${detallesError}\`);
+                            }
+
+                            console.log('   [ESPERA] Esperando 15s para reintentar...');
+                            await tabMinecraft.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+                            await new Promise(r => setTimeout(r, 15000));
+                            intentos++;
+                        }
+                    } catch (innerError) {
+                        console.log(\`   [ERROR DE NAVEGADOR] \${innerError.message}\`);
+                        console.log('   [RECUPERACION] Forzando recarga (15s)...');
+                        try { await tabMinecraft.reload({ waitUntil: 'domcontentloaded', timeout: 60000 }); } catch (e) {}
+                        await new Promise(r => setTimeout(r, 15000));
+                        intentos++;
+                    }
+                }
+
+                console.log('Pasando a NameMC...');
+                try { await tabNameMC.bringToFront(); } catch (e) {}
+
+                saltarManual = false;
+                console.log('   [ATENCION] Cuando veas que la skin se actualizo, presiona la tecla "Z" para continuar.');
+
+                for (let ciclo = 1; ciclo <= 10; ciclo++) {
+                    if (saltarManual) {
+                        console.log('   [SALTO CON TECLA Z] Pasando a la siguiente skin...');
+                        break;
+                    }
+
+                    console.log(\`   Ciclo #\${ciclo} de 10... (Recargando)\`);
+
+                    try {
+                        const promesaRecarga = tabNameMC.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+                        const promesaEscape = new Promise(resolve => { dispararFreno = resolve; });
+
+                        await Promise.race([promesaRecarga, promesaEscape]);
+                        dispararFreno = null;
+                    } catch (nameMcError) {
+                        console.log('   [AVISO] NameMC demoro en responder. Continuando...');
+                    }
+
+                    if (saltarManual) {
+                        console.log('   [SALTO CON TECLA Z] Pasando a la siguiente skin...');
+                        break;
+                    }
+
+                    if (ciclo < 10) {
+                        process.stdout.write('   Esperando 6s... (Presiona la tecla Z para saltar) ');
+                        for (let m = 0; m < 60; m++) {
+                            if (saltarManual) break;
+                            await new Promise(r => setTimeout(r, 100));
+                        }
+                        console.log();
+                    }
+                }
+
+                console.log('Enfriando sistema 4s...\\n');
+                await new Promise(r => setTimeout(r, 4000));
+            }
+${captureBlock}
+            browser.disconnect();
+            console.log('\\nPROCESO COMPLETADO. Todas las skins seleccionadas fueron subidas.');
+            process.exit(0);
+        } catch (error) {
+            console.error('\\nError en la ejecucion:', error);
+            process.exit(1);
+        }
+    });
+})();`;
+        }
+
+        function refreshGeneratorUI() {
+            const rawNick = (nickInput.value || '').trim();
+            const displayNick = rawNick || 'TU_USUARIO';
+            const modeInfo = i18nScript[currentLang].modes[activeScriptType];
+            const isMerged = activeScriptType !== 'capture' && combineWithCapture;
+            const defaultFile = isMerged ? modeInfo.combinedName : modeInfo.defaultName;
+
+            if (!userEditedFilename && filenameInput) {
+                filenameInput.value = defaultFile;
+            }
+
+            const finalFilename = normalizeJsFilename(filenameInput.value, defaultFile);
+
+            const dynLink = document.getElementById('namemc-dynamic-link');
+            if (dynLink) {
+                dynLink.textContent = `es.namemc.com/profile/${displayNick}`;
+            }
+
+            if (btnCombineCapture) {
+                if (activeScriptType === 'capture') {
+                    btnCombineCapture.style.display = 'none';
+                } else {
+                    btnCombineCapture.style.display = 'inline-flex';
+                    btnCombineCapture.classList.toggle('active', combineWithCapture);
+                    combineBtnText.textContent = combineWithCapture
+                        ? i18nScript[currentLang].combine_on
+                        : i18nScript[currentLang].combine_off;
+                }
+            }
+
+            codeFilenameLabel.textContent = finalFilename;
+            if (step1FileRef) step1FileRef.textContent = finalFilename;
+            modeSummaryTitle.textContent = isMerged ? modeInfo.titleCombined : modeInfo.title;
+            modeSummaryText.textContent = isMerged ? modeInfo.descCombined : modeInfo.desc;
+            runCmdDisplay.textContent = `node ${finalFilename}`;
+
+            codePre.textContent = buildScriptCode(activeScriptType, displayNick, isMerged);
+        }
+
+        function applyScriptPageLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18nScript[currentLang][key]) {
+                    el.innerHTML = i18nScript[currentLang][key];
+                }
+            });
+            const ind = document.getElementById('script-lang-indicator');
+            if (ind) ind.textContent = currentLang === 'es' ? 'ES / EN' : 'EN / ES';
+            refreshGeneratorUI();
+        }
+
+        document.getElementById('btn-lang-script')?.addEventListener('click', () => {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            localStorage.setItem('skinsarts_lang', currentLang);
+            applyScriptPageLanguage();
+        });
+
+        nickInput?.addEventListener('input', refreshGeneratorUI);
+        filenameInput?.addEventListener('input', () => {
+            userEditedFilename = true;
+            refreshGeneratorUI();
+        });
+
+        btnCombineCapture?.addEventListener('click', () => {
+            combineWithCapture = !combineWithCapture;
+            refreshGeneratorUI();
+        });
+
+        document.querySelectorAll('.script-tab-card').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.script-tab-card').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeScriptType = btn.getAttribute('data-script');
+                refreshGeneratorUI();
+            });
+        });
+
+        document.getElementById('btn-copy-code')?.addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            await navigator.clipboard.writeText(codePre.textContent);
+            const original = i18nScript[currentLang].copy_code;
+            btn.textContent = i18nScript[currentLang].copied;
+            setTimeout(() => { btn.textContent = original; }, 1400);
+        });
+
+        document.getElementById('btn-download-code')?.addEventListener('click', () => {
+            const modeInfo = i18nScript[currentLang].modes[activeScriptType];
+            const isMerged = activeScriptType !== 'capture' && combineWithCapture;
+            const defaultFile = isMerged ? modeInfo.combinedName : modeInfo.defaultName;
+            const finalFilename = normalizeJsFilename(filenameInput.value, defaultFile);
+            const blob = new Blob([codePre.textContent], { type: 'application/javascript;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = finalFilename;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 3000);
+        });
+
+        document.querySelectorAll('.copy-snip-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const text = btn.getAttribute('data-copy');
+                if (!text) return;
+                await navigator.clipboard.writeText(text);
+                const prev = btn.textContent;
+                btn.textContent = i18nScript[currentLang].copied;
+                setTimeout(() => { btn.textContent = prev; }, 1200);
+            });
+        });
+
+        document.getElementById('copy-run-cmd-btn')?.addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            await navigator.clipboard.writeText(runCmdDisplay.textContent);
+            const prev = i18nScript[currentLang].copy_btn;
+            btn.textContent = i18nScript[currentLang].copied;
+            setTimeout(() => { btn.textContent = prev; }, 1200);
+        });
+
+        applyScriptTheme();
+        applyScriptPageLanguage();
+    </script>
+</body>
+</html>
